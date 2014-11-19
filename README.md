@@ -1,2 +1,2 @@
-FSAB1402---Informatique-2---Projet
+FSAB1402 - Informatique 2 - Projet
 ==================================
