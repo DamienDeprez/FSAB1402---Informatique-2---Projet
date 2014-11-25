@@ -2,8 +2,8 @@
 local Mix Interprete Projet CWD in
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre à votre système.
-   CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}
-%  CWD = {Property.condGet 'testcwd' 'D:................................/'}DAMIEN
+  % CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zélie
+   CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
    % Projet fournit quatre fonctions :
    % {Projet.run Interprete Mix Music 'out.wav'} = ok OR error(...) 
    % {Projet.readFile FileName} = AudioVector OR error(...)
@@ -31,8 +31,8 @@ local Mix Interprete Projet CWD in
 			{InterpreteAux note(nom:Nom octave:Octave alteration:'#') Acc}
 			[] Atom then 
 				case {AtomToString Atom} 
-				of [N] then {InterpreteAux note(nom:Atom octave:4 alteration:none}
-				[] [N O] then {InterpreteAux note(nom:{StringToAtome [N]} octave:{StringToInt [O]} alteration:none}
+				of [N] then {InterpreteAux note(nom:Atom octave:4 alteration:none)}
+				[] [N O] then {InterpreteAux note(nom:{StringToAtome [N]} octave:{StringToInt [O]} alteration:none)}
 				end
 			[] note(nom:Nom octave:Octave alteration:Alteration) then I1 Ech in
 				case Nom 
