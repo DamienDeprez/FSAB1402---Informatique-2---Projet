@@ -67,7 +67,6 @@
 *.gls
 
 # hyperref
-*.brf
 
 # listings
 *.lol
@@ -109,3 +108,5 @@ sympy-plots-for-*.tex/
 *.xdy
 
 *.~
+*.fun~
+*.oz~
