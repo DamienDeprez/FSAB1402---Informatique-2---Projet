@@ -1,13 +1,22 @@
 Fonction Interprete
-	1. flat la partition
+	1. flat la partition % fonction flatten
 	2. case sur la partition
 		- si atom => traitement note
 		- si tuple => traitement note
 		- si note etendue => traitement note
-		- si liste => traitement note + rappel de la fonction avec la queue de la liste
+		- si liste => traitement tête de liste + rappel de la fonction avec la queue de la liste
 		- si transformation
-			- si mute
+			- si mute:
 			- si 
 			- si
 			- si
 			- si
+			
+			
+			transfo record nomTransfo(  partition)
+			
+			fonction TD
+				- fonction flatten % Zelie
+				- fonction traitement note (note to echantillon) % Zelie
+				- fonction traitement transfomation (transofmation to echantillon) % Damien
+				
