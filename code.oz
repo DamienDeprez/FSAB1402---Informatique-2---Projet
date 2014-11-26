@@ -46,13 +46,13 @@ local Mix Interprete Projet CWD in
 					case Nom 
 						of a then I1=0
 						[] b then I1=2 %2demitons entre a et b
-						[] c then I1=3 %2+1 demitons entre a et c
-						[] d then I1=5 %3+2 demitons entre a et d
-						[] e then I1=7 %5+2 demitons entre a et e
-						[] f then I1=8 %7+1 demitons entre a et f
-						[] g then I1=10 %8+2 demitons entre a et g
+						[] c then I1=-9 %-7-1 demitons entre a et c
+						[] d then I1=-7 %-5-2 demitons entre a et d
+						[] e then I1=-5 %-4-1 demitons entre a et e
+						[] f then I1=-4 %-2-2 demitons entre a et f
+						[] g then I1=-2 %-2 demitons entre a et g
 					end % fin case Nom
-				Hauteur= (4-Octave)*6 + I1 + DemiTons
+				Hauteur= (Octave-4)*12 + I1 + DemiTons
 				Ech=echantillon(hauteur:Hauteur duree:Duree instrument:none)
 				end % fin local Octave Hauteur Nom I1 Ech
 			end % fin fun{NoteToEchantillon Note Duree DemiTons}
