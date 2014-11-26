@@ -1,0 +1,13 @@
+Fonction Interprete
+	1. flat la partition
+	2. case sur la partition
+		- si atom => traitement note
+		- si tuple => traitement note
+		- si note etendue => traitement note
+		- si liste => traitement note + rappel de la fonction avec la queue de la liste
+		- si transformation
+			- si mute
+			- si 
+			- si
+			- si
+			- si
