@@ -1,0 +1,41 @@
+fun{Flatten Partition}
+	local 
+		fun{FlattenAux List A}
+			case List of nil then A
+			[] H|T then {FlattenAux H {FlattenAux T A}}
+			else List|A %cas ou List n'est pas une liste et est donc un élément
+			end
+		end
+	in 
+	{FlattenAux Partition nil}
+	end
+end
+
+fun{NoteToEchantillon Note Duree DemiTons}
+	Octave Hauteur Nom I1 Ech in
+	Nom=note.nom
+	Octave=note.octave
+		case Nom 
+			of a then I1=0
+			[] b then I1=2 %2demitons entre a et b
+			[] c then I1=3 %2+1 demitons entre a et c
+			[] d then I1=5 %3+2 demitons entre a et d
+			[] e then I1=7 %5+2 demitons entre a et e
+			[] f then I1=8 %7+1 demitons entre a et f
+			[] g then I1=10 %8+2 demitons entre a et g
+		end
+	Hauteur= (4-Octave)*6 + I1 + DemiTons
+	Ech=echantillon(hauteur:Hauteur duree:Duree instrument:none)
+	end
+end
+
+fun {Reverse Partition}
+   local fun{ReverseAux S A}
+	    case S of nil then A
+	    [] H|T then {ReverseAux T H|A}
+	    end
+	 end
+   in
+      {ReverseAux Partition nil}
+   end
+end
