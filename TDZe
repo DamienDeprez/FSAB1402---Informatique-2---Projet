@@ -63,15 +63,15 @@ fun {DureeTot Partition}
 			[] H|T then 
 				case H
 				of note(nom:Nom octave:Octave alteration:Alteration) then {DureeTotAux T Acc+Inc Inc}
-				of muet(partition) then {DureeTotAux H.1 Acc Inc} {DureeTotAux T Acc Inc}
-				of duree(secondes:number partition) then {DureeTotAux H.1 Acc H.secondes} {DureeTotAux T Acc Inc}
-				of etirer(facteur:number partition) then {DureeTotAux H.1 Acc Inc*(H.secondes)} {DureeTotAux T Acc Inc}
-				of bourdon(note:Note partition) then {DureeTotAux H.1 Acc Inc} {DureeTotAux T Acc Inc}
-				of transpose(demitons:entier partition) then {DureeTotAux H.1 Acc Inc} {DureeTotAux T Acc Inc}
+				of muet(Partition) then {DureeTotAux T {DureeTotAux Partition Acc Inc} Inc}
+				of duree(secondes:Seconde Partition) then {DureeTotAux T Acc+Seconde Inc}
+				of etirer(facteur:Facteur Partition) then {DureeTotAux T {DureeTotAux Partition Acc Facteur*Inc} Inc}
+				of bourdon(note:Note Partition) then {DureeTotAux T {DureeTotAux Partition Acc Inc} Inc}
+				of transpose(demitons:Entier Partition) then {DureeTotAux T {DureeTotAux Partition Acc Inc} Inc}
 				end
 			end
 		end
 	in
-	{DureeTot Partition 0 1}
+	{DureeTot Partition 0.0 1.0}
 	end
 end
