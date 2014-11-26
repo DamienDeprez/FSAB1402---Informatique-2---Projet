@@ -25,7 +25,7 @@ local Mix Interprete Projet CWD in
     % Interprete doit interpréter une partition
     fun {Interprete Partition}
 
-		local Flatten NoteToEchantillon Reverse in
+		local Flatten NoteToEchantillon Reverse InterpreteAux in
 
 			fun{Flatten Partition}
 				local 
@@ -68,6 +68,27 @@ local Mix Interprete Projet CWD in
 	   			end % fin local ReverseAux
 			end % fin fun {Reverse Partition}
 
+			fun {DureeTot Partition}
+				local 
+					fun{DureeTotAux Part Acc Inc}
+						case Part 
+						of nil then Acc
+						[] H|T then 
+							case H
+							of note(nom:Nom octave:Octave alteration:Alteration) then {DureeTotAux T Acc+Inc Inc}
+							of muet(Partition) then {DureeTotAux T {DureeTotAux Partition Acc Inc} Inc}
+							of duree(secondes:Seconde Partition) then {DureeTotAux T Acc+Seconde Inc}
+							of etirer(facteur:Facteur Partition) then {DureeTotAux T {DureeTotAux Partition Acc Facteur*Inc} Inc}
+							of bourdon(note:Note Partition) then {DureeTotAux T {DureeTotAux Partition Acc Inc} Inc}
+							of transpose(demitons:Entier Partition) then {DureeTotAux T {DureeTotAux Partition Acc Inc} Inc}
+							end % fin case H
+						end % fin case Part
+					end % fin fun{DureeTotAux Part Acc Inc}
+				in
+				{DureeTot Partition 0.0 1.0}
+				end % fin local 
+			end % fin fun {DureeTot Partition}
+
 			fun {InterpreteAux Partition Note Duree DemiTons Acc}
 				local PartitionFlat in
 
@@ -100,12 +121,18 @@ local Mix Interprete Projet CWD in
 					{InterperteAux TPartition nil Duree*F DemiTons Acc}
 
 				[] duree(seconde:S TPartition) then 
-					local TPartitionFlat DureeTot DureeF DureeIniF in 
+					local TPartitionFlat DureeTot DureeTotF DureeF DureeIniF IsFloat in 
 						TPartitionFlat={Flatten TPartition}
-						DureeTot={DureeTot TPartitionFlat 0.0} 
+						DureeTot={DureeTot TPartitionFlat}
+						{Float.is DureeTot IsFloat}
 						{Int.toFloat Duree DureeIniF} %cast en float pour la division
 						{Int.toFloat S DureeF}
+						if IsFloat then
 						{InterpreteAux TPartitionFlat nil DureeIniF*DureeF/DureeTot DemiTons Acc}
+						else
+						{Int.toFloat DureeTot DureeTotF}
+						{InterpreteAux TPartitionFlat nil DureeIniF*DureeF/DureeTotF DemiTons Acc}
+						
 					end % fin local TPartitionFlat DureeTot DureeF DureeIniF
 
 				[] bourdon(note:Note Partition) then 
@@ -119,7 +146,7 @@ local Mix Interprete Projet CWD in
 				end % fin case Partition
 			end % fin fun {InterpreteAux Partition Note Duree DemiTons Acc}
 			{InterpreteAux Partition nil 1 0 nil}
-		end % fin local Flatten NoteToEchantillon Reverse
+		end % fin local Flatten NoteToEchantillon Reverse InterpreteAux
 	end % fin fun {Interprete Partition}
 
 	local 
