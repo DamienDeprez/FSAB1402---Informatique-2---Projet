@@ -1,4 +1,4 @@
-% Vous ne pouvez pas utiliser le mot-cle 'declare'.
+﻿% Vous ne pouvez pas utiliser le mot-cle 'declare'.
 local Mix Interprete Projet CWD in
 	% CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
 	% modifiez sa valeur pour correspondre à votre système.
@@ -33,7 +33,7 @@ local Mix Interprete Projet CWD in
 					case List of nil then A
 					[] H|T then {FlattenAux H {FlattenAux T A}}
 					else List|A end %cas ou List n'est pas une liste et est donc un élément 
-					end % fin case List
+					end % fin FLattenAux List
 				in 
 				{FlattenAux Partition nil}
 				end % fin local
@@ -41,12 +41,12 @@ local Mix Interprete Projet CWD in
 
 			fun{NoteToEchantillon Note Duree DemiTons}
 				local Octave Hauteur Nom I1 Ech in
-				Nom=note.nom
-				Octave=note.octave
+				Nom=Note.nom
+				Octave=Note.octave
 					case Nom 
 						of a then I1=0
 						[] b then I1=2 %2demitons entre a et b
-						[] c then I1=~9 %-7-1 demitons entre a et c
+						[] c then I1=~9 %-7-2 demitons entre a et c
 						[] d then I1=~7 %-5-2 demitons entre a et d
 						[] e then I1=~5 %-4-1 demitons entre a et e
 						[] f then I1=~4 %-2-2 demitons entre a et f
@@ -93,7 +93,7 @@ local Mix Interprete Projet CWD in
 				local PartitionFlat in
 
 				%Flatten Partition
-				PartitionFlat=Flatten{Partition}
+				PartitionFlat={Flatten Partition}
 
 				%Case of Partition type
 				case PartitionFlat
