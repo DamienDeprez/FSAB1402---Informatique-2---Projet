@@ -1,9 +1,8 @@
 ﻿local Frequence EchantillonToVecteurAudio in
 	fun{Frequence Hauteur}
-		R H HtoInt in
-		{Int.toFloat Hauteur HtoInt}
-		{Float.'/' HtoInt 12.0 H}
-		{Number.pow 2.0 H R}
+		R HtoFloat in
+		{Int.toFloat Hauteur HtoFloat}
+		{Number.pow 2.0 (HtoFloat/12.0) R}
 		R*440.0
 		end %fin du local
 	end%fin de la fonction frequence
