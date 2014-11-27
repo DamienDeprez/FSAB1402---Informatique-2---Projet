@@ -93,7 +93,7 @@ local Mix Interprete Projet CWD in
 				local PartitionFlat in
 
 				%Flatten Partition
-				PartitionFlat=Flatten{Partition}
+				%PartitionFlat=Flatten{Partition}
 
 				%Case of Partition type
 				case PartitionFlat
@@ -115,10 +115,10 @@ local Mix Interprete Projet CWD in
 					{InterpreteAux nil nil Duree DemiTons {PartitionFlat Duree DemiTons}|Acc}
 
 				[] muet(TPartition) then 
-					{InterperteAux TPartition silence Duree DemiTons Acc}
+					{InterperteAux {Flatten TPartition} silence Duree DemiTons Acc}
 
 				[] etirer(facteur:F TPartition) then
-					{InterperteAux TPartition nil Duree*F DemiTons Acc}
+					{InterperteAux {Flatten TPartition} nil Duree*F DemiTons Acc}
 
 				[] duree(seconde:S TPartition) then 
 					local TPartitionFlat DureeTot DureeTotF DureeF DureeIniF IsFloat in 
@@ -135,17 +135,17 @@ local Mix Interprete Projet CWD in
 						
 					end % fin local TPartitionFlat DureeTot DureeF DureeIniF
 
-				[] bourdon(note:Note Partition) then 
-					{InterpreteAux Partition Note Duree DemiTons Acc}
+				[] bourdon(note:Note TPartition) then 
+					{InterpreteAux {Flatten TPartition} Note Duree DemiTons Acc}
 
-				[] transpose(demitons:DemiTons Partition) then
-					{InterpreteAux Partition nil Duree DemiTons Acc}
+				[] transpose(demitons:DemiTons TPartition) then
+					{InterpreteAux {Flatten TPartition} nil Duree DemiTons Acc}
 
 				[] H|T then
-					{InterpreteAux T nil Duree DemiTons {InterpretAux H nil Duree DemiTons Acc}}
+					{Flatten {InterpreteAux T nil Duree DemiTons {InterpretAux H nil Duree DemiTons nil}|Acc}}
 				end % fin case Partition
 			end % fin fun {InterpreteAux Partition Note Duree DemiTons Acc}
-			{InterpreteAux Partition nil 1 0 nil}
+			{Reverse {InterpreteAux {Flatten Partition} nil 1 0 nil}}
 		end % fin local Flatten NoteToEchantillon Reverse InterpreteAux
 	end % fin fun {Interprete Partition}
 
