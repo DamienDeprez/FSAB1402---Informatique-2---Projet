@@ -1,0 +1,12 @@
+<project name="DJOZ" default="archive">
+	<target name="archive">
+		<zip destfile="80051300-28931300.zip">
+			<zipfileset dir="." includes="code.oz" />
+			<zipfileset dir="." includes="example.dj.oz" />
+			<zipfileset dir="." includes="rapport.pdf" />
+			<!---includesfile="code.oz"
+			includesfile="example.dj.oz"
+			includesfile="rapport.pdf"-->
+		</zip>
+	</target>
+</project>
