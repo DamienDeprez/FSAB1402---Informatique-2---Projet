@@ -1,4 +1,4 @@
-﻿local Frequence EchantillonToVecteurAudio in
+﻿local Frequence EchantillonToVecteurAudio Clip RepetitionDuree RepetitionNfois in
 	fun{Frequence Hauteur}
 		R HtoFloat in
 		{Int.toFloat Hauteur HtoFloat}
@@ -43,6 +43,22 @@
 		end%fin du local ClipAux
 	end%Fin de la fonction Clip
 	
+	fun{RepetitionNfois N Music}
+		local
+			fun{RepetitionAux N Acc}
+				if N==0 then Acc
+				else {RepetitionAux N-1 {Mix Interprete Music}|Acc}
+			
+			end
+		in
+		{RepetitionAux N nil}
+		end
+	end
+	
+	fun{RepetitionDuree Duree}
+	
+	end
+	
 end%fin du local des subfonctions
 
 
@@ -54,11 +70,11 @@ fun{Mix Interprete Music}
 		[] H|T then case H
 			of partition(P) then {Mix Interprete voix({Interprete P})}
 			[] voix(H1|T1) then {MixAux Interprete T {MixAux Inteprete T1 {EchantillonToVecteurAudio H1}|Acc}}
-			%[] wave(filename) %then {MixAux Interprete T {Projet.readFile filename}|Acc}
+			[] wave(filename) then {MixAux Interprete T {Projet.readFile filename}|Acc}
 			%[] merge(musiqueIntensifiee)
-			%[] renverser(musique) %then {MixAux Interprete T {MixAux Interprete {Reverse musique} Acc}|Acc}
-			%[] repetition(nombre:nat musique)
-			%[] repetition(duree:sec musique)
+			[] renverser(musique) %then {MixAux Interprete T {Mix Interprete {Reverse musique}}|Acc}
+			[] repetition(nombre:nat musique) then {MixAux Interprete T {RepetitionNfois repetition.nombre repetition.1}|Acc}
+			[] repetition(duree:sec musique) then {MixAux Interprete T {RepetitionDuree repetition.duree}|Acc}
 			[] clip(bas:float haut:float musique) then {Clip clip.haut clip.bas {Mix Inteprete clip.1}}
 			%[] echo(delai:sec musique)
 			%[] echo(delai:sec decadence:float musique)
