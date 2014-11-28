@@ -37,10 +37,11 @@
 				else {ClipAux T H|Acc}
 				end%fin du %if
 			end%fin du case VecteurAudio
+			end %fin de la fonction ClipAux
 		in
 		{Reverse {ClipAux VecteurAudio nil}}
-		end
-	end
+		end%fin du local ClipAux
+	end%Fin de la fonction Clip
 	
 end%fin du local des subfonctions
 
