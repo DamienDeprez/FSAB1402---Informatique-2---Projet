@@ -55,7 +55,7 @@ fun{Mix Interprete Music}
 			[] voix(H1|T1) then {MixAux Interprete T {MixAux Inteprete T1 {EchantillonToVecteurAudio H1}|Acc}}
 			%[] wave(filename) %then {MixAux Interprete T {Projet.readFile filename}|Acc}
 			%[] merge(musiqueIntensifiee)
-			%[] renverser(musique)
+			%[] renverser(musique) %then {MixAux Interprete T {MixAux Interprete {Reverse musique} Acc}|Acc}
 			%[] repetition(nombre:nat musique)
 			%[] repetition(duree:sec musique)
 			[] clip(bas:float haut:float musique) then {Clip clip.haut clip.bas {Mix Inteprete clip.1}}
