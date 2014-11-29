@@ -69,17 +69,60 @@ Notre fonction InterpreteAux a donc comme paramètres Partition, Note, Duree, De
 \item Acc: l'accumulateur comme on peut s'en douter est utile pour la récursion terminale, car au fur et à mesure qu'on parcourt la partition il stocke les notes converties en échantillons. 
 \end{itemize}
 
-Une simple note se traduit facilement en échantillon, quel que soit sa notation. Nous n'avons pas utilisé la fonction ToNote fournie, mais nous avons réutilisé son concept au sein de notre propre fonction. 
+Une simple note se traduit facilement en note étendue, quel que soit sa notation. Nous n'avons pas utilisé la fonction ToNote fournie, mais nous avons réutilisé son concept au sein de notre propre fonction. Nous avons créé une fonction NoteToEchantillon qui prend une note étendue, une durée et un nombre de demitons en argument. La durée et les demitons sont ceux qu'on retrouve dans la fonction InterpretAux. On calcule le nombre de demitons par rapport au la de la quatrième octave (a4).
 
 Comme chaque transformation s'applique sur une partition, nous avons utilisé la récursion pour interpreter les partitions modifiées en changeant les différents paramètres de notre fonction auxiliaire.
 
+La fonction DureeTot d'une partition est utile pour la transformation duree, puisque lorsqu'on change la durée d'une partition, il faut changer la durée de chacun de ses notes, il est dès lors très utile de connaitre la durée totale de la partition afin de pouvoir réduire chaque note dans le bon rapport. 
+
+La fonction Flatten nous permet de déplier nos partitions pour qu'elles ne contiennent plus de listes de listes de listes..., mais pour que ce ne soit plus qu'une liste avec seulement des transformations et des notes. Nous réappelons également cette fonction sur les partitions que nous trouvons dans chaque transformation.
+
 \subsection{Mixer la musique}
+Le gros de la structure de notre fonction Mix et des sous fonctions qu'elle utilise est donnée ci-dessous.
+
+\begin{lstlisting}[frame=single] 
+fun{Frequence Hauteur}
+fun{EchantillonToVecteurAudio Echantillon}
+fun{Clip Up Down VecteurAudio}
+fun{RepetitionNfois N Music}
+fun{RepetitionDuree Duree Musique}
+fun{Echo Delai Music}
+fun{EchoDecadence Delai Decadence Music}
+
+fun{Mix Interprete Music}
+	fun{MixAux Interprete  Music  Acc}
+	of partition(P) then {Mix Interprete voix({Interprete P})}
+	[] voix(H1|T1) then {EchantillonToVecteurAudio H1}
+	[] wave(filename) then {Projet.readFile filename}
+	[] merge(musiqueIntensifiee)
+	[] renverser(musique) 
+	[] repetition(nombre:nat musique) then {RepetitionNfois repetition.nombre repetition.1}
+	[] repetition(duree:sec musique) then {RepetitionDuree repetition.duree}
+	[] clip(bas:float haut:float musique) then {Clip clip.haut clip.bas {Mix Inteprete clip.1}}
+	[] echo(delai:sec musique) then  {Echo echo.delai echo.1}
+	[] echo(delai:sec decadence:float musique) then {EchoDecadence echo.delai echo.decadence echo.1}
+	[] echo(delai:sec decadence:float repetition:entier musique)
+	[] fondu(ouverture:sec fermeture:sec musique)
+	[] fondu_enchaine(duree:sec musique1 musique2)
+
+\end{lstlisting}
+
+Puisque dans le cas de la fonction Mix, nous ne traitons plus des partitions, mais de la musique qui ne s'exprime que sous la forme d'une simple liste sans imbrication, il n'est plus nécessaire de faire une fonction auxiliaire avec de nombreux arguments. Pour rendre notre fonction récursive terminale, nous avons donc simplement fait une fonction auxiliaire avec un accumulateur. 
 
 
 \section{Difficultés rencontrées, limitations et problèmes connus}
-Nous n'arretons pas de retourner nos listes.
+\begin{itemize}
+\item Etant un binome de deux non-musiciens, le vocabulaire lié à la musique nous a posé quelques problèmes lors de la compréhension du problème, mais également lors de l'implémentation de la fonction NoteToEchantillon. Celle-ci consistait à déterminer le nombre de demitons séparant la note courante de la note a4 de référence. Nous avons du réimplémenter cette fonction à plusieurs reprises après s'etre rendu compte que nous avions mal compris la logique des demitons entre chaque note et chaque octave. Les documentations Wikipedia ont du etre relues plusieurs fois afin de réellement comprendre ces différents concept.
+
+\item Lors des différents tests de notre programme, nous avons eu des parse error à de nombreuses reprises, malheureusement Mozart n'est pas toujours très explicite dans ses erreurs et nous avons passé beaucoup de temps à les dénicher. 
+ 
+\item Nous n'arretons pas de retourner nos listes.
+\end{itemize}
+
 
 \section{Complexité des fonctions}
+
+
 
 \section{Conclusion}
 \end{document}}
