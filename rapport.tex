@@ -68,6 +68,11 @@ Notre fonction InterpreteAux a donc comme paramètres Partition, Note, Duree, De
 \item Demitons: une fois de plus cet argument est initialisé à 0 et ne change que dans le cas d'une transformation transpose.
 \item Acc: l'accumulateur comme on peut s'en douter est utile pour la récursion terminale, car au fur et à mesure qu'on parcourt la partition il stocke les notes converties en échantillons. 
 \end{itemize}
+
+Une simple note se traduit facilement en échantillon, quel que soit sa notation. Nous n'avons pas utilisé la fonction ToNote fournie, mais nous avons réutilisé son concept au sein de notre propre fonction. 
+
+Comme chaque transformation s'applique sur une partition, nous avons utilisé la récursion pour interpreter les partitions modifiées en changeant les différents paramètres de notre fonction auxiliaire.
+
 \subsection{Mixer la musique}
 
 

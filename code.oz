@@ -93,7 +93,7 @@ local Mix Interprete Projet CWD in
 
       % Interprete doit interpréter une partition
 	 fun {Interprete Partition}
-	    local Flatten NoteToEchantillon Reverse InterpreteAux DureeTot in
+	    local Flatten NoteToEchantillon R InterpreteAux DureeTot in
 	       fun{Flatten Partition}
 		  local 
 		     fun{FlattenAux List A}
@@ -225,9 +225,10 @@ local Mix Interprete Projet CWD in
 		     end % fin case {AtomToString Atom}
 		  end % fin case Partition
 	       end % fin fun {InterpreteAux Partition Note Duree DemiTons Acc}
-	       {Reverse {InterpreteAux  Partition nil 1 0 nil}}
+	       {List.reverse {InterpreteAux  Partition nil 1 0 nil} R}
+		   R
 	    
-	    end % fin local Faltten NoteToEchantillon Reverse InterpreteAux DureeTot
+	    end % fin local Faltten NoteToEchantillon R InterpreteAux DureeTot
 	 end % fin fun {Interprete Partition}
       end % fin local Audio
 
