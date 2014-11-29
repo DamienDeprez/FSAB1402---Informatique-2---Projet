@@ -48,7 +48,6 @@
 			fun{RepetitionAux N Acc}
 				if N==0 then Acc
 				else {RepetitionAux N-1 {Mix Interprete Music}|Acc}
-			
 			end
 		in
 		{RepetitionAux N nil}

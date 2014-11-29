@@ -2,7 +2,7 @@
 local Mix Interprete Projet CWD in
 	% CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
 	% modifiez sa valeur pour correspondre à votre système.
-	% CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zélie
+	 %CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zélie
 	CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 	% Projet fournit quatre fonctions :
 	% {Projet.run Interprete Mix Music 'out.wav'} = ok OR error(...) 
