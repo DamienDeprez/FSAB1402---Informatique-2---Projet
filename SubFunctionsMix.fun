@@ -39,7 +39,7 @@ end
 	end%fin fonction EchantillonToVecteurAudio
 
 	fun{Clip Up Down VecteurAudio}
-		local 
+		local R
 			fun{ClipAux VecteurAudio Acc}
 			case VecteurAudio 
 			of nil then Acc
@@ -51,7 +51,8 @@ end
 			end%fin du case VecteurAudio
 			end %fin de la fonction ClipAux
 		in
-		{Reverse {ClipAux VecteurAudio nil}}
+		{List.reverse {ClipAux VecteurAudio nil} R}
+		R
 		end%fin du local ClipAux
 	end%Fin de la fonction Clip
 	
@@ -102,14 +103,14 @@ end%fin du local des subfonctions
 declare
 PI=3.14159265359
 fun{Mix Interprete Music}
-	local fun{MixAux Interprete Music Acc}%Acc pour stocker l'ensemble des vecteurs audio de chaque echantillon
+	local R fun{MixAux Interprete Music Acc}%Acc pour stocker l'ensemble des vecteurs audio de chaque echantillon
 		case Music of nil then Acc
 		[] H|T then case H
 			of partition(P) then {Mix Interprete voix({Interprete P})}
 			[] voix(H1|T1) then {MixAux Interprete T {MixAux Inteprete T1 {EchantillonToVecteurAudio H1}|Acc}}
 			[] wave(filename) then {MixAux Interprete T {Projet.readFile filename}|Acc}
 			%[] merge(musiqueIntensifiee)
-			[] renverser(musique) %then {MixAux Interprete T {Mix Interprete {Reverse musique}}|Acc}
+			[] renverser(musique) %then {List.reverse renverser.1 R} andthen {MixAux Interprete T {Mix Interprete R}|Acc}
 			[] repetition(nombre:nat musique) then {MixAux Interprete T {RepetitionNfois repetition.nombre repetition.1}|Acc}
 			%[] repetition(duree:sec musique) then {MixAux Interprete T {RepetitionDuree repetition.duree}|Acc}
 			[] clip(bas:float haut:float musique) then {Clip clip.haut clip.bas {Mix Inteprete clip.1}}
