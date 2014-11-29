@@ -127,17 +127,7 @@ local Mix Interprete Projet CWD in
 		  end % fin local Octave Hauteur Nom I1 Ech
 	       end % fin fun{NoteToEchantillon Note Duree DemiTons}
 
-	       fun {Reverse Partition}
-		  local ReverseAux in
-		     fun{ReverseAux S A}
-			case S of nil then A
-			[] H|T then {ReverseAux T H|A}
-			end % fin case S
-		     end % fin fun{ReverseAux S A}
-		     {ReverseAux Partition nil}
-		  end % fin local ReverseAux
-	       end % fin fun {Reverse Partition}
-
+	       
 	       fun {DureeTot Partition}
 		  local 
 		     fun{DureeTotAux Part Acc Inc}
