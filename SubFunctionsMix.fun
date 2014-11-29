@@ -1,4 +1,16 @@
-﻿local Frequence EchantillonToVecteurAudio Clip RepetitionDuree RepetitionNfois in
+﻿local Frequence EchantillonToVecteurAudio Clip RepetitionDuree RepetitionNfois MultiplyList in
+	fun{MultiplyList N L}
+		local MultiplyAux in
+			fun{MultiplyAux L1 Acc}
+				case L1 
+				of nil then Acc
+				[] H|T then {MultiplyAux T (H*N)|Acc }
+				end
+			end
+		{MultiplyAux {Reverse L} nil}
+   end
+end
+	
 	fun{Frequence Hauteur}
 		R HtoFloat in
 		{Int.toFloat Hauteur HtoFloat}
@@ -58,6 +70,17 @@
 	
 	end
 	
+	fun{Echo Delai Music}
+		local MusicWithDelai in
+			MusicWithDelai=silence(duree:Delai)|Music
+			{Merge [0.5#Music 0.5#MusicWithDelai]}
+		end
+	end
+	
+	fun{Merge L}
+	
+	end
+	
 end%fin du local des subfonctions
 
 
@@ -73,9 +96,9 @@ fun{Mix Interprete Music}
 			%[] merge(musiqueIntensifiee)
 			[] renverser(musique) %then {MixAux Interprete T {Mix Interprete {Reverse musique}}|Acc}
 			[] repetition(nombre:nat musique) then {MixAux Interprete T {RepetitionNfois repetition.nombre repetition.1}|Acc}
-			[] repetition(duree:sec musique) then {MixAux Interprete T {RepetitionDuree repetition.duree}|Acc}
+			%[] repetition(duree:sec musique) then {MixAux Interprete T {RepetitionDuree repetition.duree}|Acc}
 			[] clip(bas:float haut:float musique) then {Clip clip.haut clip.bas {Mix Inteprete clip.1}}
-			%[] echo(delai:sec musique)
+			[] echo(delai:sec musique) then {MixAux Inteprete T {Echo echo.delai echo.1}|Acc}
 			%[] echo(delai:sec decadence:float musique)
 			%[] echo(delai:sec decadence:float repetition:entier musique)
 			%[] fondu(ouverture:sec fermeture:sec musique)
