@@ -112,3 +112,4 @@ sympy-plots-for-*.tex/
 *.oz~
 *.pdf
 *.xml~
+/SubFunctionsMix.fun
