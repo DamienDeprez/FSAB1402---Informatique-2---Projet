@@ -1,19 +1,79 @@
 \documentclass[a4paper,12pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
-
+\usepackage{listings}
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{frame=tb,
+		language=Oz,
+ 		aboveskip=3mm,
+  		belowskip=3mm,
+  		showstringspaces=false,
+  		columns=flexible,
+  		basicstyle={\small\ttfamily},
+  		numbers=left,
+ 		numberstyle=\tiny\color{gray},
+  		keywordstyle=\color{mauve},
+  		commentstyle=\color{dkgreen},
+  		stringstyle=\color{blue},
+  		breaklines=true,
+  		breakatwhitespace=true
+  		tabsize=3
+	}
 \begin{document}
 \section{Introduction}
 Dans ce présent rapport nous allons vous présenter les fonctions que nous avons implémentées dans le cadre du projet du cours d'informatique en deuxième année de bachelier en ingénieur civil. Ce projet consiste à écrire deux fonctions principales permettant de transformer une partition musicale en un fichier audio et de mixer et/ou transformer une ou plusieurs musiques. Nous vous détaillerons dans ce rapport la structure de notre programme, les décisions que nous avons prises, les difficultées rencontrées ainsi que les limites et problemes de notre implémentation, nous finirons par estimer la complexité de nos fonctions. Le code dans son entièreté ne se retrouvera pas dans ce rapport.
 
 \section{Structure du programme}
 Les deux fonctions principales de notre programme étant relativement indépendantes dans leur implémentation et leurs besoins, nous avons décidé de déclarer les sous-fonctions relatives à chaque fonction à l'intérieur de celles-ci.
-\subsection{Intepréter une partition}
+\begin{lstlisting}[frame=single] 
+fun{Interprete Partition}
+	--Sous-Fonctions--
+fun{Mix Interprete Music}
+	--Sous-Fonctions--
+\end{lstlisting}
 
+\subsection{Intepréter une partition}
+Globalement la structure de la fonction Interprete est reprise si dessous. Nous avons veillé à ce qu'elle soit récursive terminale, pour cela nous avons donc créé une fonction InterpreteAux reprenant un certains nombre de paramètres en plus que l'originale. 
+Gardons en tête que notre fonction interprete doit renvoyer une voix, c'est à dire une liste ne contenant plus que des échantillons, qui eux sont des enregistrements. 
+Pour rappel un échantillon est de la forme:\\
+$\langle$ \textit{echantillon} $\rangle$::=silence(duree:$\langle$\textit{seconde}$\rangle$) \\
+$\vert$ echantillon(hauteur:$\langle$\textit{entier}$\rangle$ duree:$\langle$\textit{seconde}$\rangle$ instrument:$\langle$\textit{none}$\rangle$)
+
+
+\begin{lstlisting}[frame=single] 
+fun{Interprete Partition}
+	fun{Flatten Partition}
+	fun{NoteToEchantillon Note Duree DemiTons}
+	fun {DureeTot Partition}
+	fun {InterpreteAux Partition Note Duree DemiTons Acc}
+		case Partition
+		[] nil %On renvoie l'accumulateur
+		[] Note % decuple en plusieurs case en fonction du format de la note
+		[] muet(TPartition)
+		[] etirer(facteur:F TPartition)
+		[] duree(seconde:S TPartition)
+		[] bourdon(note:NoteB TPartition)
+		[] transpose(demitons:DemiTons TPartition)
+		[] H|T			
+\end{lstlisting}
+
+Notre fonction InterpreteAux a donc comme paramètres Partition, Note, Duree, DemiTons et Acc (un accumulateur). Regardons leur utilité plus en détail:
+\begin{itemize}
+\item Partition: rien de surprenant ici puisque la fonction interprete à pour but premier interpreter une partition. 
+\item Note: par défaut = nil, cet argument est utile lors des transformations muet et bourdon. En effet, lorsqu'une de ses transformations est appelée, Note est remplacé respectivement par un silence ou la note à "bourdonner".  
+\item Duree: pour une note n'ayant subit aucune transformation, la durée est d'une seconde. Ce paramètre est donc utilisé pour le cas ou la transformation duree et etirer.
+\item Demitons: une fois de plus cet argument est initialisé à 0 et ne change que dans le cas d'une transformation transpose.
+\item Acc: l'accumulateur comme on peut s'en douter est utile pour la récursion terminale, car au fur et à mesure qu'on parcourt la partition il stocke les notes converties en échantillons. 
+\end{itemize}
 \subsection{Mixer la musique}
 
 
 \section{Difficultés rencontrées, limitations et problèmes connus}
+Nous n'arretons pas de retourner nos listes.
+
 \section{Complexité des fonctions}
 
 \section{Conclusion}

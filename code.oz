@@ -52,7 +52,7 @@ local Mix Interprete Projet CWD in
 	       end % fin EchantillonToAudio
 
 	       fun{ListEchantillonToAudio Echantillon Facteur}
-		  local LeToAudio in
+		  local LeToAudio R in
 		     fun{LeToAudio ListEch Acc Facteur}
 			case ListEch
 			of nil then Acc
@@ -60,7 +60,8 @@ local Mix Interprete Projet CWD in
 			end % fin case
 		     end	% fin fun {LeToAudio}
 		     {Browse Facteur}
-		     {List.reverse {LeToAudio Echantillon nil Facteur}}
+		     {List.reverse {LeToAudio Echantillon nil Facteur} R}
+			 R
 		  end % fin local
 	       end % fin fun{ListEchantillonToAudio}
 
