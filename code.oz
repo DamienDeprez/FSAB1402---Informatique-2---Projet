@@ -56,7 +56,7 @@ local Mix Interprete Projet CWD in
 	    end % fin fonction EchantillonToVecteurAudio
 
 	    fun{Clip Up Down VecteurAudio}
-	       local 
+	       local R
 		  fun{ClipAux VecteurAudio Acc}
 		     case VecteurAudio 
 		     of nil then Acc
@@ -68,7 +68,8 @@ local Mix Interprete Projet CWD in
 		     end%fin du case VecteurAudio
 		  end %fin de la fonction ClipAux
 	       in
-		  {Reverse {ClipAux VecteurAudio nil}}
+		  {List.reverse {ClipAux VecteurAudio nil} R}
+		  R
 	       end%fin du local ClipAux
 	    end%Fin de la fonction Clip
 
@@ -91,7 +92,7 @@ local Mix Interprete Projet CWD in
 
       % Interprete doit interpréter une partition
       fun {Interprete Partition}
-local Flatten NoteToEchantillon Reverse InterpreteAux DureeTot in
+local Flatten NoteToEchantillon R InterpreteAux DureeTot in
       fun{Flatten Partition}
 	 local 
 	    fun{FlattenAux List A}
@@ -124,17 +125,6 @@ local Flatten NoteToEchantillon Reverse InterpreteAux DureeTot in
 	    end%fin du case
 	 end % fin local Octave Hauteur Nom I1 Ech
       end % fin fun{NoteToEchantillon Note Duree DemiTons}
-
-      fun {Reverse Partition}
-	 local ReverseAux in
-	    fun{ReverseAux S A}
-	       case S of nil then A
-	       [] H|T then {ReverseAux T H|A}
-	       end % fin case S
-	    end % fin fun{ReverseAux S A}
-	    {ReverseAux Partition nil}
-	 end % fin local ReverseAux
-      end % fin fun {Reverse Partition}
 
       fun {DureeTot Partition}
 	 local 
@@ -223,9 +213,10 @@ local Flatten NoteToEchantillon Reverse InterpreteAux DureeTot in
 	    end % fin case {AtomToString Atom}
 	 end % fin case Partition
       end % fin fun {InterpreteAux Partition Note Duree DemiTons Acc}
-      {Reverse {InterpreteAux  Partition nil 1 0 nil}}
+      {List.reverse {InterpreteAux  Partition nil 1 0 nil} R}
+	  R
 	    
-   end % fin local Faltten NoteToEchantillon Reverse InterpreteAux DureeTot
+   end % fin local Flatten NoteToEchantillon R InterpreteAux DureeTot
       end % fin fun {Interprete Partition}
    end % fin local Audio
 

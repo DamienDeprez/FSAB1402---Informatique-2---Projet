@@ -1,5 +1,5 @@
 ﻿local Frequence EchantillonToVecteurAudio Clip RepetitionDuree RepetitionNfois MultiplyList in
-	fun{MultiplyList N L}
+	fun{MultiplyList N L} %Equivalent à {List.map +Xs +P ?Ys} ou on applique P à tous les éléments de Xs
 		local MultiplyAux in
 			fun{MultiplyAux L1 Acc}
 				case L1 
@@ -66,8 +66,15 @@ end
 		end
 	end
 	
-	fun{RepetitionDuree Duree}
-	
+	fun{RepetitionDuree Duree Musique}
+	SizeVec= Duree*44100.0
+	L={Mix Interprete Musique}
+		local RepetitionAux in
+			fun{RepetitionAux L1 Size Acc}
+				case L1 of nil then Acc
+				[] H|T {RepetitionAux T Size-1 H|Acc}
+			end
+		end
 	end
 	
 	fun{Echo Delai Music}
@@ -77,6 +84,14 @@ end
 		end
 	end
 	
+	fun{EchoDecadence Delai Decadence Music}
+		local MusicWithDelai IntensiteEcho IntensiteMusic in %Decadence =Iecho/Imusic et Iecho+Imusic=1 --> Imusic=1/(decadence+1)
+			MusicWithDelai=silence(duree:Delai)|Music
+			IntensiteMusic=1.0/(Decadence+1.0)
+			IntensiteEcho=IntensiteMusic*Decadence
+			{Merge [(IntensiteMusic#Music IntensiteEcho#MusicWithDelai]}
+		end
+	end
 	fun{Merge L}
 	
 	end
@@ -99,7 +114,7 @@ fun{Mix Interprete Music}
 			%[] repetition(duree:sec musique) then {MixAux Interprete T {RepetitionDuree repetition.duree}|Acc}
 			[] clip(bas:float haut:float musique) then {Clip clip.haut clip.bas {Mix Inteprete clip.1}}
 			[] echo(delai:sec musique) then {MixAux Inteprete T {Echo echo.delai echo.1}|Acc}
-			%[] echo(delai:sec decadence:float musique)
+			[] echo(delai:sec decadence:float musique) then {MixAux Inteprete T {EchoDecadence echo.delai echo.decadence echo.1}|Acc}
 			%[] echo(delai:sec decadence:float repetition:entier musique)
 			%[] fondu(ouverture:sec fermeture:sec musique)
 			%[] fondu_enchaine(duree:sec musique1 musique2)
