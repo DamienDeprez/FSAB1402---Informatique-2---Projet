@@ -85,15 +85,42 @@ end
 		end
 	end
 	
-	fun{EchoDecadence Delai Decadence Music}
-		local MusicWithDelai IntensiteEcho IntensiteMusic in %Decadence =Iecho/Imusic et Iecho+Imusic=1 --> Imusic=1/(decadence+1)
-			MusicWithDelai=silence(duree:Delai)|Music
-			IntensiteMusic=1.0/(Decadence+1.0)
-			IntensiteEcho=IntensiteMusic*Decadence
-			{Merge [(IntensiteMusic#Music IntensiteEcho#MusicWithDelai]}
+	fun{FonduEnchaine Duree Music1 Music2 Facteur}
+	       local DureeTot VecAudio1 VecAudio2 L1 L2 VecSilence Fondu1 Fondu2 in
+		  VecAudio1={MixAux Interprete Music1 Facteur nil}
+		  VecAudio2={MixAux Interprete Music1 Facteur nil}
+		  {List.Length VecAudio1 L1}
+		  {List.Length VecAudio2 L2}
+		  Fondu1=fondu(ouverture=0.0, fermeture={IntToFloat L1}-(Duree*44100.0) Music1) 
+		  Fondu2=fondu(ouverture=(Duree*44100.0) fermeture=0.0 Music2)
+		  VecSilence={MixAux Interprete voix([silence(duree:{IntToFloat L1}-Duree*44100.0)]) Facteur nil}
+		  {Add Fondu1 {Append VecSilence Fondu2}}
+		  	end % fin local
+	    end % fin Fondu
+		
+	fun{Couper Debut Fin Music Facteur}
+		local VecAudio Size in
+			VecAudio={MixAux Interprete Music Facteur nil}
+			Size={IntToFloat {Length VecAudio}}		
+				if Debut<=0.0 andthen Fin<=0.0 then {MixAux Interprete voix([silence(duree:(~Debut+Fin)*44100.0]) Facteur nil}
+				elseif Debut>=Size andthen Fin>=Size then {MixAux Interprete voix([silence(duree:(Fin~Debut)*44100.0]) Facteur nil}
+				elseif Fin>Size then {Append {Couper Debut Size/44100.0 Music Facteur} {MixAux Interprete voix([silence(duree:(Fin-Size)*44100.0]) Facteur nil} }
+				elseif Debut<0.0 then {Append {MixAux Interprete voix([silence(duree:~Debut*44100.0]) Facteur nil} {Couper 0.0 Fin Music Facteur}}
+				else local Decompte in
+					fun{Decompte Begin End Vec Acc}
+						case Vec 
+						of nil then Acc
+						[] H|T then
+							if Begin<=0.0 andthen End>0.0 then {Decompte Begin End-1.0 T H|Acc}
+							elseif End<=0.0 then Acc
+							else {Decompte Begin-1.0 End-1.0 T Acc}
+							end
+						end
+					end
+					{Reverse {Decompte Debut Fin VecAudio nil}}
+					end
+				end
 		end
-	end
-	fun{Merge L}
 	
 	end
 	

@@ -1,4 +1,5 @@
 \documentclass[a4paper,12pt]{report}
+\usepackage{fullpage}
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{listings}
@@ -23,10 +24,10 @@
   		tabsize=3
 	}
 \begin{document}
-\section{Introduction}
-Dans ce présent rapport nous allons vous présenter les fonctions que nous avons implémentées dans le cadre du projet du cours d'informatique en deuxième année de bachelier en ingénieur civil. Ce projet consiste à écrire deux fonctions principales permettant de transformer une partition musicale en un fichier audio et de mixer et/ou transformer une ou plusieurs musiques. Nous vous détaillerons dans ce rapport la structure de notre programme, les décisions que nous avons prises, les difficultées rencontrées ainsi que les limites et problemes de notre implémentation, nous finirons par estimer la complexité de nos fonctions. Le code dans son entièreté ne se retrouvera pas dans ce rapport.
 
-\section{Structure du programme}
+Dans ce présent rapport nous allons vous présenter les fonctions que nous avons implémentées dans le cadre du projet du cours d'informatique en deuxième année de bachelier en ingénieur civil. Nous vous détaillerons dans ce rapport la structure de notre programme, les décisions que nous avons prises, les difficultées rencontrées ainsi que les limites et problemes de notre implémentation, nous finirons par estimer la complexité de nos fonctions. Le code dans son entièreté ne se retrouvera pas dans ce rapport.
+
+\section*{Structure du programme}
 Les deux fonctions principales de notre programme étant relativement indépendantes dans leur implémentation et leurs besoins, nous avons décidé de déclarer les sous-fonctions relatives à chaque fonction à l'intérieur de celles-ci.
 \begin{lstlisting}[frame=single] 
 fun{Interprete Partition}
@@ -35,19 +36,13 @@ fun{Mix Interprete Music}
 	--Sous-Fonctions--
 \end{lstlisting}
 
-\subsection{Intepréter une partition}
-Globalement la structure de la fonction Interprete est reprise si dessous. Nous avons veillé à ce qu'elle soit récursive terminale, pour cela nous avons donc créé une fonction InterpreteAux reprenant un certains nombre de paramètres en plus que l'originale. 
-Gardons en tête que notre fonction interprete doit renvoyer une voix, c'est à dire une liste ne contenant plus que des échantillons, qui eux sont des enregistrements. 
-Pour rappel un échantillon est de la forme:\\
-$\langle$ \textit{echantillon} $\rangle$::=silence(duree:$\langle$\textit{seconde}$\rangle$) \\
-$\vert$ echantillon(hauteur:$\langle$\textit{entier}$\rangle$ duree:$\langle$\textit{seconde}$\rangle$ instrument:$\langle$\textit{none}$\rangle$)
-
-
+\subsection*{Intepréter une partition}
+Globalement la structure de la fonction Interprete est reprise ci dessous. Nous avons veillé à ce qu'elle soit récursive terminale, pour cela nous avons donc créé une fonction InterpreteAux reprenant un certains nombre de paramètres en plus que l'originale. 
 \begin{lstlisting}[frame=single] 
 fun{Interprete Partition}
-	fun{Flatten Partition}
-	fun{NoteToEchantillon Note Duree DemiTons}
-	fun {DureeTot Partition}
+	fun{Flatten Partition} %Permet de "deplier" les partitions pour ne plus avoir de listes imbriquees
+	fun{NoteToEchantillon Note Duree DemiTons} %Argument note=note etendue ! Demitons=0 si pas de transformations
+	fun {DureeTot Partition} %Utile pour la transformation Duree 
 	fun {InterpreteAux Partition Note Duree DemiTons Acc}
 		case Partition
 		[] nil %On renvoie l'accumulateur
@@ -69,15 +64,11 @@ Notre fonction InterpreteAux a donc comme paramètres Partition, Note, Duree, De
 \item Acc: l'accumulateur comme on peut s'en douter est utile pour la récursion terminale, car au fur et à mesure qu'on parcourt la partition il stocke les notes converties en échantillons. 
 \end{itemize}
 
-Une simple note se traduit facilement en note étendue, quel que soit sa notation. Nous n'avons pas utilisé la fonction ToNote fournie, mais nous avons réutilisé son concept au sein de notre propre fonction. Nous avons créé une fonction NoteToEchantillon qui prend une note étendue, une durée et un nombre de demitons en argument. La durée et les demitons sont ceux qu'on retrouve dans la fonction InterpretAux. On calcule le nombre de demitons par rapport au la de la quatrième octave (a4).
 
 Comme chaque transformation s'applique sur une partition, nous avons utilisé la récursion pour interpreter les partitions modifiées en changeant les différents paramètres de notre fonction auxiliaire.
 
-La fonction DureeTot d'une partition est utile pour la transformation duree, puisque lorsqu'on change la durée d'une partition, il faut changer la durée de chacun de ses notes, il est dès lors très utile de connaitre la durée totale de la partition afin de pouvoir réduire chaque note dans le bon rapport. 
 
-La fonction Flatten nous permet de déplier nos partitions pour qu'elles ne contiennent plus de listes de listes de listes..., mais pour que ce ne soit plus qu'une liste avec seulement des transformations et des notes. Nous réappelons également cette fonction sur les partitions que nous trouvons dans chaque transformation.
-
-\subsection{Mixer la musique}
+\subsection*{Mixer la musique}
 Le gros de la structure de notre fonction Mix et des sous fonctions qu'elle utilise est donnée ci-dessous.
 
 \begin{lstlisting}[frame=single] 
@@ -110,19 +101,18 @@ fun{Mix Interprete Music}
 Puisque dans le cas de la fonction Mix, nous ne traitons plus des partitions, mais de la musique qui ne s'exprime que sous la forme d'une simple liste sans imbrication, il n'est plus nécessaire de faire une fonction auxiliaire avec de nombreux arguments. Pour rendre notre fonction récursive terminale, nous avons donc simplement fait une fonction auxiliaire avec un accumulateur. 
 
 
-\section{Difficultés rencontrées, limitations et problèmes connus}
+\section*{Difficultés rencontrées, limitations et problèmes connus}
 \begin{itemize}
-\item Etant un binome de deux non-musiciens, le vocabulaire lié à la musique nous a posé quelques problèmes lors de la compréhension du problème, mais également lors de l'implémentation de la fonction NoteToEchantillon. Celle-ci consistait à déterminer le nombre de demitons séparant la note courante de la note a4 de référence. Nous avons du réimplémenter cette fonction à plusieurs reprises après s'etre rendu compte que nous avions mal compris la logique des demitons entre chaque note et chaque octave. Les documentations Wikipedia ont du etre relues plusieurs fois afin de réellement comprendre ces différents concept.
+\item Etant un binome de deux \textbf{non-musiciens}, le vocabulaire lié à la musique nous a posé quelques problèmes lors de la compréhension du problème, mais également lors de l'implémentation de la fonction NoteToEchantillon. Celle-ci consistait à déterminer le nombre de demitons séparant la note courante de la note a4 de référence. Nous avons du réimplémenter cette fonction à plusieurs reprises après s'etre rendu compte que nous avions mal compris la logique des demitons entre chaque note et chaque octave. Les documentations Wikipedia ont du etre relues plusieurs fois afin de réellement comprendre ces différents concept.
 
-\item Lors des différents tests de notre programme, nous avons eu des parse error à de nombreuses reprises, malheureusement Mozart n'est pas toujours très explicite dans ses erreurs et nous avons passé beaucoup de temps à les dénicher. 
+\item Lors des différents tests de notre programme, nous avons eu des \textbf{parse error} à de nombreuses reprises, malheureusement Mozart n'est pas toujours très explicite dans ses erreurs et nous avons passé beaucoup de temps à les dénicher. 
  
 \item Nous n'arretons pas de retourner nos listes.
 \end{itemize}
 
 
-\section{Complexité des fonctions}
+\section*{Complexité des fonctions}
 
 
 
-\section{Conclusion}
 \end{document}}
