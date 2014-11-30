@@ -24,8 +24,29 @@ local Mix Interprete Projet CWD in
    in
       % Mix prends une musique et doit retourner un vecteur audio.
       fun {Mix Interprete Music}
-	 local MixAux ListEchantillonToAudio EchantillonToAudio Frequence Clip RepetitionNfois RepetitionDuree Pi=3.1415 in
+	 local MixAux ListEchantillonToAudio EchantillonToAudio Add Frequence Clip RepetitionNfois RepetitionDuree Echo Merge Fondu Pi=3.1415 in
 
+	    fun{Add List1 List2}
+	       local AddAux S1 S2 in
+		  S1={Length List1}
+		  S2={Length List2}
+		  fun{AddAux L1 L2 Acc}
+		     case L1
+		     of nil then Acc
+		     [] H1|T1 then
+			case L2
+			of nil then {AddAux T1 nil H1|Acc}
+			[] H2|T2 then {AddAux T1 T2 (H1+H2)|Acc}
+			end % end case L2
+		     end % end case L1
+		  end % end fun AddAux
+		  if S1>S2 then{Reverse {AddAux List1 List2 nil}}
+		  else {Reverse {AddAux List2 List1 nil}}
+		  end % end if S1>S2
+	       end %end local
+	    end % en fun Add
+
+	    
 	    fun{Frequence Hauteur}
 	       local R HtoFloat in
 		  {Int.toFloat Hauteur HtoFloat}
@@ -38,13 +59,22 @@ local Mix Interprete Projet CWD in
 	       local F EchToAudio in
 		  fun{EchToAudio Ech Fac I Vec}
 		     local IsFloat DureeF Sin in
-			F={Frequence Echantillon.hauteur}
-			{Float.is Ech.duree IsFloat}
-			if IsFloat then DureeF=Ech.duree
-			else {Int.toFloat Ech.duree DureeF} end
-			{Float.sin (2.0*Pi*I*F)/44100.0 Sin}
-			if I>DureeF*44100.0 then Vec
-			else {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin)|Vec} end
+			case Ech
+			of silence(duree:S) then
+			   {Float.is S IsFloat}
+			   if IsFloat then DureeF=S
+			   else {Int.toFloat S DureeF} end
+			   if I>=DureeF*44100.0 then Vec
+			   else {EchToAudio Ech Fac I+1.0 0.0|Vec} end
+			[] echantillon(hauteur:Hauteur duree:S instrument:Instrument) then
+			   F={Frequence Echantillon.hauteur}
+			   {Float.is S IsFloat}
+			   if IsFloat then DureeF=S
+			   else {Int.toFloat S DureeF} end
+			   {Float.sin (2.0*Pi*I*F)/44100.0 Sin}
+			   if I>=DureeF*44100.0 then Vec
+			   else {EchToAudio Ech Fac I+1.0 (Fac*1.0*Sin)|Vec} end
+			end
 		     end % fin local
 		  end % fin EchToAudio
 		  {EchToAudio Echantillon Facteur 0.0 Acc}
@@ -63,7 +93,7 @@ local Mix Interprete Projet CWD in
 	       end % fin local
 	    end % fin fun{ListEchantillonToAudio}
 
-	    fun{Clip Up Down MusicClip}
+	    fun{Clip Up Down MusicClip Facteur}
 	       local ClipAux
 		  fun{ClipAux VecteurAudio Acc}
 		     case VecteurAudio 
@@ -76,15 +106,15 @@ local Mix Interprete Projet CWD in
 		     end%fin du case VecteurAudio
 		  end %fin de la fonction ClipAux
 	       in
-		  {List.reverse {ClipAux {MixAux Interprete MusicClip  nil} nil }}
+		  {List.reverse {ClipAux {MixAux Interprete MusicClip Facteur  nil} nil }}
 	       end%fin du local ClipAux
 	    end%Fin de la fonction Clip
 
-	    fun{RepetitionNfois N Music}
+	    fun{RepetitionNfois N Music Facteur}
 	       local
 		  fun{RepetitionAux N Acc}
 		     if N==0 then Acc
-		     else{RepetitionAux N-1 {Mix Interprete Music}|Acc}
+		     else{RepetitionAux N-1 {MixAux Interprete Music Facteur nil}|Acc}
 		     end % fin if else
 		  end % fin RepetitionAux
 		  
@@ -93,8 +123,8 @@ local Mix Interprete Projet CWD in
 	       end % fin local
 	    end % fin RepetitionNfois
 
-	    fun{RepetitionDuree Duree Musique}
-	       local RepetitionAux L={Mix Interprete Musique} in
+	    fun{RepetitionDuree Duree Musique Facteur}
+	       local RepetitionAux L={MixAux Interprete Musique Facteur nil} in
 		  fun{RepetitionAux L1 Size Acc}
 		     case L1
 		     of nil andthen Size=<0 then Acc
@@ -106,98 +136,147 @@ local Mix Interprete Projet CWD in
 		  {RepetitionAux L Duree*44100 nil}
 	       end % fin local
 	    end % fin RepetitionDuree
+
+	    fun{Echo Duree Decadence Repetition Music Facteur}
+	       local EchoAux in
+		  fun{EchoAux Music R Acc}
+		     local Intensity Reste B C D Vec in
+			if (Decadence==1.0) then Intensity={Floor 100.0/({IntToFloat Repetition}+1.0)}/100.0
+			else
+			   Reste={Pow Decadence {IntToFloat Repetition+1}}
+			   B={Pow Decadence {IntToFloat R}}
+			   C={Pow 2.0 {IntToFloat R}}
+			   D=B+{Ceil Reste/C*100.0}/100.0
+			   Intensity={Round 100.0*D}/100.0 end
+			Vec={MixAux Interprete [voix([silence(duree:{IntToFloat R-1}*Duree)]) Music] Facteur*Intensity nil}
+			if R==Repetition+1 then {Add Acc Vec}
+			else{EchoAux Music R+1 {Add Acc Vec}} end
+		     end
+		  end
+		  {EchoAux Music 1 nil}
+	       end
+	    end
 	    
-	    fun{MixAux Interprete  Music  Acc}
-	       case Music
+	    fun{Merge MusicWithIntensity Acc Facteur}
+	       case MusicWithIntensity
 	       of nil then Acc
-	       [] voix(Voix) then {ListEchantillonToAudio Voix 1.0}
-	       [] partition(Partition) then {ListEchantillonToAudio {Interprete Partition} 1.0}
+	       [] H|T then{Merge T {Add {MixAux Interprete H.2 Facteur*H.1 nil} Acc}Facteur}
+	       end
+	    end
+
+	    fun{Fondu Ouverture Fermeture Music Facteur}
+	       local DureeTot VecAudio FonduAux in
+		  VecAudio={MixAux Interprete Music Facteur nil}
+		  DureeTot= {IntToFloat{Length VecAudio}}
+		  {Browse {IsFloat DureeTot}}
+		  fun{FonduAux T VA Acc}
+		     local Douv=Ouverture*44100.0 Dferm=Fermeture*44100.0 Dt={IntToFloat T} in
+			case VA
+			of nil then {Reverse Acc}
+			[] H|Q andthen Dt<Douv then {FonduAux T+1 Q ((H*Dt)/Douv)|Acc}
+			[] H|Q andthen Dt>=Dferm then {FonduAux T+1 Q ((DureeTot-Dt)*H/Dferm)|Acc}
+			[] H|Q then {FonduAux T+1 Q H|Acc}
+			end % fin case
+		     end % fin local
+		  end % fin FonduAux
+		  {FonduAux 0 VecAudio nil}
+	       end % fin local
+	    end % fin Fondu
+	    
+	       
+	    
+	    
+	    fun{MixAux Interprete  Music Facteur  Acc}
+	       case Music
+	       of nil then {Flatten Acc}
+	       [] voix(Voix) then {ListEchantillonToAudio Voix Facteur}
+	       [] partition(Partition) then {ListEchantillonToAudio {Interprete Partition} Facteur}
 	       [] wave(File) then {Projet.readFile File}
-	       [] renverser(MusicR) then{List.reverse {Mix Interprete MusicR}}
-	       [] repetition(nombre:N MusicR) then{RepetitionNfois N MusicR}
-	       [] repetition(duree:S MusicR) then {RepetitionDuree S MusicR}
-	       [] clip(bas:Bas haut:Haut MusiC)  then {Clip Haut Bas MusiC}
-			%[] echo(delai:S Music) then
-			%[] echo(delai:S decadence:D Music) then
-			%[] echo(delai:S decadence:D repetition:R Music) then
-			%[] fondu(ouverture:S1 fermeture:S2 Music) then
+	       [] renverser(MusicR) then{List.reverse {MixAux Interprete MusicR Facteur nil}}
+	       [] repetition(nombre:N MusicR) then{RepetitionNfois N MusicR Facteur}
+	       [] repetition(duree:S MusicR) then {RepetitionDuree S MusicR Facteur}
+	       [] clip(bas:Bas haut:Haut MusiC)  then {Clip Haut Bas MusiC Facteur}
+	       [] echo(delai:S MusicE) then {Echo S 1.0 1 MusicE Facteur}
+	       [] echo(delai:S decadence:D MusicE)then{Echo S D 1 MusicE Facteur}
+	       [] echo(delai:S decadence:D repetition:R MusicE)then {Echo S D R MusicE Facteur}
+	       [] fondu(ouverture:S1 fermeture:S2 MusicF) then {Fondu S1 S2 MusicF Facteur}
 			%[] fondu_enchaine(duree:S Music1 Music2) then
 			%[] couper(debut:S1 fin:S2 Music) then
-			%[] merge (MusicWithIntensity) then
-	       [] H|T then {MixAux Interprete T {MixAux Interprete H Acc}}
+	       [] merge(MusicWithIntensity) then {Merge MusicWithIntensity nil Facteur}
+	       [] H|T then {MixAux Interprete T Facteur Acc|{MixAux Interprete H Facteur nil}}
 	       end % fin case Music
 	    end % fin fun {MixAux}
-	    {MixAux Interprete Music  nil}
+	    {MixAux Interprete Music 1.0  nil}
 	 end % fin local	    
       end
 
       % Interprete doit interpréter une partition
-	 fun {Interprete Partition}
-	    local Flatten NoteToEchantillon R InterpreteAux DureeTot in
-	       fun{Flatten Partition}
-		  local 
-		     fun{FlattenAux List A}
-			case List of nil then A
-			[] H|T then {FlattenAux H {FlattenAux T A}}
-			else List|A end %cas ou List n'est pas une liste et est donc un élément 
-		     end % fin FLattenAux List
-		  in 
-		     {FlattenAux Partition nil}
-		  end % fin local
-	       end % fin fun{Flatten Partition}
+      fun {Interprete Partition}
+	 local Flatten NoteToEchantillon R InterpreteAux DureeTot in
+	    fun{Flatten Partition}
+	       local 
+		  fun{FlattenAux List A}
+		     case List of nil then A
+		     [] H|T then {FlattenAux H {FlattenAux T A}}
+		     else List|A end %cas ou List n'est pas une liste et est donc un élément 
+		  end % fin FLattenAux List
+	       in 
+		  {FlattenAux Partition nil}
+	       end % fin local
+	    end % fin fun{Flatten Partition}
 	    
-	       fun{NoteToEchantillon Note Duree DemiTons}
-		  local Octave Hauteur Nom I1 Ech in
-		     case Note of note(nom:Name octave:Oct alteration:Alt) then
-			Nom=Note.nom
-			Octave=Note.octave
-			case Nom 
-			of a then I1=0
-			[] b then I1=2 % 2 demitons entre a et b
-			[] c then I1=~9 %-7-2 demitons entre a et c
-			[] d then I1=~7 %-5-2 demitons entre a et d
-			[] e then I1=~5 %-4-1 demitons entre a et e
-			[] f then I1=~4 %-2-2 demitons entre a et f
-			[] g then I1=~2 %-2 demitons entre a et g
-			end % fin case Nom
-			Hauteur= (Octave-4)*12 + I1 + DemiTons
-			echantillon(hauteur:Hauteur duree:Duree instrument:none)
-		     [] silence then silence(duree:Duree)
-		     end%fin du case
-		  end % fin local Octave Hauteur Nom I1 Ech
-	       end % fin fun{NoteToEchantillon Note Duree DemiTons}
+	    fun{NoteToEchantillon Note Duree DemiTons}
+	       local Octave Hauteur Nom I1 Ech in
+		  case Note of note(nom:Name octave:Oct alteration:Alt) then
+		     Nom=Note.nom
+		     Octave=Note.octave
+		     case Nom 
+		     of a then I1=0
+		     [] b then I1=2 % 2 demitons entre a et b
+		     [] c then I1=~9 %-7-2 demitons entre a et c
+		     [] d then I1=~7 %-5-2 demitons entre a et d
+		     [] e then I1=~5 %-4-1 demitons entre a et e
+		     [] f then I1=~4 %-2-2 demitons entre a et f
+		     [] g then I1=~2 %-2 demitons entre a et g
+		     end % fin case Nom
+		     Hauteur= (Octave-4)*12 + I1 + DemiTons
+		     echantillon(hauteur:Hauteur duree:Duree instrument:none)
+		  [] silence then silence(duree:Duree)
+		  end%fin du case
+	       end % fin local Octave Hauteur Nom I1 Ech
+	    end % fin fun{NoteToEchantillon Note Duree DemiTons}
 
 	       
-	       fun {DureeTot Partition}
-		  local 
-		     fun{DureeTotAux Part Acc Inc}
-			case Part 
-			of nil then Acc
-			[] H|T then 
-			   case H
-			   of note(nom:Nom octave:Octave alteration:Alteration) then {DureeTotAux T Acc+Inc Inc}
-			   [] muet(Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Inc} Inc}
-			   [] duree(secondes:Seconde Partition) then {DureeTotAux T Acc+Seconde Inc}
-			   [] etirer(facteur:Facteur Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Facteur*Inc} Inc}
-			   [] bourdon(note:Note Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Inc} Inc}
-			   [] transpose(demitons:Entier Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Inc} Inc}
-			   [] Nom#Octave then {DureeTotAux T Acc+Inc Inc}
-			   [] Atom then {DureeTotAux T Acc+Inc Inc}
-			   end % fin case H
-			end % fin case Part
-		     end % fin fun{DureeTotAux Part Acc Inc}
-		  in
-		     {DureeTotAux Partition 0.0 1.0}
-		  end % fin local 
-	       end % fin fun {DureeTot Partition}
+	    fun {DureeTot Partition}
+	       local 
+		  fun{DureeTotAux Part Acc Inc}
+		     case Part 
+		     of nil then Acc
+		     [] H|T then 
+			case H
+			of note(nom:Nom octave:Octave alteration:Alteration) then {DureeTotAux T Acc+Inc Inc}
+			[] muet(Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Inc} Inc}
+			[] duree(secondes:Seconde Partition) then {DureeTotAux T Acc+Seconde Inc}
+			[] etirer(facteur:Facteur Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Facteur*Inc} Inc}
+			[] bourdon(note:Note Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Inc} Inc}
+			[] transpose(demitons:Entier Partition) then {DureeTotAux T {DureeTotAux {Flatten Partition} Acc Inc} Inc}
+			[] Nom#Octave then {DureeTotAux T Acc+Inc Inc}
+			[] Atom then {DureeTotAux T Acc+Inc Inc}
+			end % fin case H
+		     end % fin case Part
+		  end % fin fun{DureeTotAux Part Acc Inc}
+	       in
+		  {DureeTotAux Partition 0.0 1.0}
+	       end % fin local 
+	    end % fin fun {DureeTot Partition}
 
-	       fun {InterpreteAux Partition Note Duree DemiTons Acc}
+	    fun {InterpreteAux Partition Note Duree DemiTons Acc}
 				%Case of Partition type
-		  case Partition
-		  of nil then Acc	
-		  [] Nom#Octave then
-		     if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:Nom octave:Octave alteration:'#') Duree DemiTons}|Acc}
-		     else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
+	       case Partition
+	       of nil then Acc	
+	       [] Nom#Octave then
+		  if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:Nom octave:Octave alteration:'#') Duree DemiTons}|Acc}
+		  else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
 
 	       [] note(nom:Nom octave:Octave alteration:Alteration) then
 		  if Note==nil then 
@@ -244,23 +323,23 @@ local Mix Interprete Projet CWD in
 	       [] H|T then
 		  {InterpreteAux T Note Duree DemiTons {InterpreteAux H Note Duree DemiTons Acc}}
 
-		  [] Atom then
-		     case {AtomToString Atom}
-		     of [N] then
-			if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:Atom octave:4 alteration:none) Duree DemiTons}|Acc}
-			else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
-		     [] [N O] then
-			if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:{StringToAtom [N]} octave:{StringToInt [O]} alteration:none) Duree DemiTons}|Acc}
-			else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
-		     end % fin case {AtomToString Atom}
-		  end % fin case Partition
-	       end % fin fun {InterpreteAux Partition Note Duree DemiTons Acc}
-	       {List.reverse {InterpreteAux  Partition nil 1 0 nil} R}
-		   R
+	       [] Atom then
+		  case {AtomToString Atom}
+		  of [N] then
+		     if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:Atom octave:4 alteration:none) Duree DemiTons}|Acc}
+		     else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
+		  [] [N O] then
+		     if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:{StringToAtom [N]} octave:{StringToInt [O]} alteration:none) Duree DemiTons}|Acc}
+		     else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
+		  end % fin case {AtomToString Atom}
+	       end % fin case Partition
+	    end % fin fun {InterpreteAux Partition Note Duree DemiTons Acc}
+	    {List.reverse {InterpreteAux  Partition nil 1 0 nil} R}
+	    R
 	    
-	    end % fin local Faltten NoteToEchantillon R InterpreteAux DureeTot
-	 end % fin fun {Interprete Partition}
-      end % fin local Audio
+	 end % fin local Faltten NoteToEchantillon R InterpreteAux DureeTot
+      end % fin fun {Interprete Partition}
+   end % fin local Audio
 
    local 
       Music = {Projet.load CWD#'example.dj.oz'}
