@@ -73,7 +73,7 @@ local Mix Interprete Projet CWD in
 			   else {Int.toFloat S DureeF} end
 			   {Float.sin (2.0*Pi*I*F)/44100.0 Sin}
 			   if I>=DureeF*44100.0 then Vec
-			   else {EchToAudio Ech Fac I+1.0 (Fac*1.0*Sin)|Vec} end
+			   else {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin)|Vec} end
 			end
 		     end % fin local
 		  end % fin EchToAudio
@@ -165,21 +165,22 @@ local Mix Interprete Projet CWD in
 	    end
 
 	    fun{Fondu Ouverture Fermeture Music Facteur}
-	       local DureeTot VecAudio FonduAux in
+	       local DureeTot VecAudio FonduAux Douv=Ouverture*44100.0 Dferm in
 		  VecAudio={MixAux Interprete Music Facteur nil}
 		  DureeTot= {IntToFloat{Length VecAudio}}
-		  {Browse {IsFloat DureeTot}}
+		  Dferm=DureeTot-Fermeture*44100.0
 		  fun{FonduAux T VA Acc}
-		     local Douv=Ouverture*44100.0 Dferm=Fermeture*44100.0 Dt={IntToFloat T} in
+		     local Dt={IntToFloat T} in
 			case VA
 			of nil then {Reverse Acc}
-			[] H|Q andthen Dt<Douv then {FonduAux T+1 Q ((H*Dt)/Douv)|Acc}
-			[] H|Q andthen Dt>=Dferm then {FonduAux T+1 Q ((DureeTot-Dt)*H/Dferm)|Acc}
+			[] H|Q andthen Dt=<Douv then {FonduAux T+1 Q ((H*Dt)/Douv)|Acc}
+			[] H|Q andthen Dt>=Dferm then {FonduAux T+1 Q (H*(Dt-DureeTot))/(Dferm-DureeTot)|Acc}
 			[] H|Q then {FonduAux T+1 Q H|Acc}
 			end % fin case
 		     end % fin local
 		  end % fin FonduAux
-		  {FonduAux 0 VecAudio nil}
+		  if (Ouverture+Fermeture)*44100.0>DureeTot then VecAudio
+		  else {FonduAux 0 VecAudio nil} end
 	       end % fin local
 	    end % fin Fondu
 	    
