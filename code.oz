@@ -57,7 +57,7 @@ local Mix Interprete Projet CWD in
 
 	    fun{EchantillonToAudio Echantillon Facteur Acc}
 	       local F EchToAudio in
-		  fun{EchToAudio Ech Fac I Vec}
+		  fun{EchToAudio Ech Fac I Vec Lissage}
 		     local IsFloat DureeF Sin in
 			case Ech
 			of silence(duree:S) then
@@ -65,7 +65,7 @@ local Mix Interprete Projet CWD in
 			   if IsFloat then DureeF=S
 			   else {Int.toFloat S DureeF} end
 			   if I>=DureeF*44100.0 then Vec
-			   else {EchToAudio Ech Fac I+1.0 0.0|Vec} end
+			   else {EchToAudio Ech Fac I+1.0 0.0|Vec 0.0} end
 			[] echantillon(hauteur:Hauteur duree:S instrument:Instrument) then
 			   F={Frequence Echantillon.hauteur}
 			   {Float.is S IsFloat}
@@ -73,11 +73,16 @@ local Mix Interprete Projet CWD in
 			   else {Int.toFloat S DureeF} end
 			   {Float.sin (2.0*Pi*I*F)/44100.0 Sin}
 			   if I>=DureeF*44100.0 then Vec
-			   else {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin)|Vec} end
-			end
+			   else
+			      % Ajout du lissage
+			      if I<1000.0 then {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin*I/1000.0)|Vec Lissage+1.0}
+			      elseif I>(DureeF*44100.0-1000.0) then { EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin*(I-DureeF*44100.0)/(~1000.0))|Vec Lissage-1.0}
+			      else {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin)|Vec 1000.0 } end % fin if lissage
+			   end % fin if dans le vecteur
+			end % fin case echantillon
 		     end % fin local
 		  end % fin EchToAudio
-		  {EchToAudio Echantillon Facteur 0.0 Acc}
+		  {EchToAudio Echantillon Facteur 0.0 Acc 0.0}
 	       end % fin local
 	    end % fin EchantillonToAudio
 
@@ -343,7 +348,7 @@ local Mix Interprete Projet CWD in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'example.dj.oz'}
+      Music = {Projet.load CWD#'joie.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -351,7 +356,7 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-      {Browse {Projet.run Mix Interprete Music CWD#'outTest.wav'}}
+      {Browse {Projet.run Mix Interprete Music CWD#'joieLisseFast.wav'}}
    end
 end
 
