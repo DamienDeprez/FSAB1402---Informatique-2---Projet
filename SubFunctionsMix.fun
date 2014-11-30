@@ -117,7 +117,7 @@ end
 							end
 						end
 					end
-					{Reverse {Decompte Debut Fin VecAudio nil}}
+					{Reverse {Decompte (Debut*44100.0) (Fin*44100.0) VecAudio nil}}
 					end
 				end
 		end
