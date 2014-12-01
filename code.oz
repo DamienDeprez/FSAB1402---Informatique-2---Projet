@@ -34,10 +34,10 @@ local Mix Interprete Projet CWD in
 		     case L1
 		     of nil then Acc
 		     [] H1|T1 then
-			case L2
-			of nil then {AddAux T1 nil H1|Acc}
-			[] H2|T2 then {AddAux T1 T2 (H1+H2)|Acc}
-			end % end case L2
+				case L2
+				of nil then {AddAux T1 nil H1|Acc}
+				[] H2|T2 then {AddAux T1 T2 (H1+H2)|Acc}
+				end % end case L2
 		     end % end case L1
 		  end % end fun AddAux
 		  if S1>S2 then{Reverse {AddAux List1 List2 nil}}
@@ -245,7 +245,10 @@ local Mix Interprete Projet CWD in
 		     [] f then I1=~4 %-2-2 demitons entre a et f
 		     [] g then I1=~2 %-2 demitons entre a et g
 		     end % fin case Nom
-		     Hauteur= (Octave-4)*12 + I1 + DemiTons
+				if note.alteration=='#' then
+				Hauteur= (Octave-4)*12 + I1 + DemiTons +1
+				else Hauteur= (Octave-4)*12 + I1 + DemiTons 
+				end
 		     echantillon(hauteur:Hauteur duree:Duree instrument:none)
 		  [] silence then silence(duree:Duree)
 		  end%fin du case
