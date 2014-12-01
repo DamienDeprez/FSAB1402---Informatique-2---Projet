@@ -24,7 +24,7 @@ local Mix Interprete Projet CWD in
    in
       % Mix prends une musique et doit retourner un vecteur audio.
       fun {Mix Interprete Music}
-	 local MixAux ListEchantillonToAudio EchantillonToAudio Add Frequence Clip RepetitionNfois RepetitionDuree Echo Merge Fondu Pi=3.1415 in
+	 local MixAux ListEchantillonToAudio EchantillonToAudio Add Frequence Clip RepetitionNfois RepetitionDuree Echo Merge Fondu Couper FonduEnchaine Pi=3.1415 in
 
 	    fun{Add List1 List2}
 	       local AddAux S1 S2 in
@@ -32,12 +32,12 @@ local Mix Interprete Projet CWD in
 		  S2={Length List2}
 		  fun{AddAux L1 L2 Acc}
 		     case L1
-		     of nil then Acc
+		     of nil then{Browse 'add fin'} Acc
 		     [] H1|T1 then
-				case L2
-				of nil then {AddAux T1 nil H1|Acc}
-				[] H2|T2 then {AddAux T1 T2 (H1+H2)|Acc}
-				end % end case L2
+			case L2
+			of nil then {AddAux T1 nil H1|Acc}
+			[] H2|T2 then {AddAux T1 T2 (H1+H2)|Acc}
+			end % end case L2
 		     end % end case L1
 		  end % end fun AddAux
 		  if S1>S2 then{Reverse {AddAux List1 List2 nil}}
@@ -178,7 +178,7 @@ local Mix Interprete Projet CWD in
 		     local Dt={IntToFloat T} in
 			case VA
 			of nil then {Reverse Acc}
-			[] H|Q andthen Dt=<Douv then {FonduAux T+1 Q ((H*Dt)/Douv)|Acc}
+			[] H|Q andthen Dt<Douv then {FonduAux T+1 Q ((H*Dt)/Douv)|Acc}
 			[] H|Q andthen Dt>=Dferm then {FonduAux T+1 Q (H*(Dt-DureeTot))/(Dferm-DureeTot)|Acc}
 			[] H|Q then {FonduAux T+1 Q H|Acc}
 			end % fin case
@@ -190,11 +190,62 @@ local Mix Interprete Projet CWD in
 	    end % fin Fondu
 	    
 	       
-	    
-	    
+	    fun{Couper In Out Musique Facteur}
+	       local VecAudio Size Decompte Debut=In*44100.0 Fin=Out*44100.0 in
+		  VecAudio={MixAux Interprete Musique Facteur nil}
+		  Size={IntToFloat {Length VecAudio}}
+		  fun{Decompte Begin End Vec Acc}
+		     case Vec 
+		     of nil then Acc
+		     [] H|T then
+			if Begin=<1.0 andthen End>0.0 then {Decompte Begin End-1.0 T H|Acc} % Begin=<1.0 pour inclure la valeur du pt de départ
+			elseif End=<0.0 then Acc
+			else {Decompte Begin-1.0 End-1.0 T Acc}
+			end
+		     end
+		  end % fin Decompte
+		  if Debut<0.0 then
+		     if Fin<0.0 then
+			if Fin<Debut then {Browse error} nil
+			else{MixAux Interprete [voix([silence(duree:(Fin-Debut))])] Facteur nil} end
+		     else
+			if Fin>Size then{MixAux Interprete [voix([silence(duree:~Debut)]) Musique voix([silence(duree:(Size-Fin))])] Facteur nil}
+			elseif Fin==Size then {MixAux Interprete [voix([silence(duree:~Debut)]) Musique] Facteur nil}
+			else{Append {MixAux Interprete [voix([silence(duree:~Debut)])] Facteur nil} {Reverse{Decompte 0.0 Fin VecAudio nil}}} end
+		     end
+		  else
+		     if Fin<Debut then {Browse error} nil
+		     elseif Fin==Debut then nil
+		     else
+			if Fin>Size then{MixAux Interprete [Musique voix([silence(duree:(Size-Fin))])] Facteur nil}
+			elseif Fin==Size then VecAudio
+			else {Reverse{Decompte Debut Fin VecAudio nil}} end
+		     end
+		  end
+	       end
+	    end
+
+
+	    fun{FonduEnchaine Duree Music1 Music2 Facteur}
+	       local VecAudio1 VecAudio2 DureeMusic1 VecSilence VecAudio3 in
+		  VecAudio1={MixAux Interprete [fondu(ouverture:0.0 fermeture:Duree Music1)] Facteur nil}
+		  VecAudio2={MixAux Interprete [fondu(ouverture:Duree fermeture:0.0 Music2)] Facteur nil}
+		  DureeMusic1={IntToFloat {Length VecAudio1}}/44100.0
+		  {Browse DureeMusic1-Duree}
+		  VecSilence={MixAux Interprete [voix([silence(duree:(DureeMusic1-Duree))])] Facteur nil}
+		 % Fondu1=fondu(ouverture=0.0, fermeture={IntToFloat L1}-(Duree*44100.0) Music1) 
+		 % Fondu2=fondu(ouverture=(Duree*44100.0) fermeture=0.0 Music2)
+		  {Browse 'debut append'}
+		  VecAudio3={Append VecSilence VecAudio2}
+		  {Browse 'append fin'}
+		  {Browse 'add debut'}
+		  {Add VecAudio1 VecAudio3}
+	       end % fin local
+	    end % fin Fondu
+      
 	    fun{MixAux Interprete  Music Facteur  Acc}
 	       case Music
-	       of nil then {Flatten Acc}
+	       of nil then {Browse 'fin mix'}{Flatten Acc}
 	       [] voix(Voix) then {ListEchantillonToAudio Voix Facteur}
 	       [] partition(Partition) then {ListEchantillonToAudio {Interprete Partition} Facteur}
 	       [] wave(File) then {Projet.readFile File}
@@ -206,12 +257,13 @@ local Mix Interprete Projet CWD in
 	       [] echo(delai:S decadence:D MusicE)then{Echo S D 1 MusicE Facteur}
 	       [] echo(delai:S decadence:D repetition:R MusicE)then {Echo S D R MusicE Facteur}
 	       [] fondu(ouverture:S1 fermeture:S2 MusicF) then {Fondu S1 S2 MusicF Facteur}
-			%[] fondu_enchaine(duree:S Music1 Music2) then
-			%[] couper(debut:S1 fin:S2 Music) then
+	       [] fondu_enchaine(duree:S MusiC1 MusiC2) then {FonduEnchaine S MusiC1 MusiC2 Facteur}
+	       [] couper(debut:S1 fin:S2 MusiC) then{Couper S1 S2 MusiC Facteur}
 	       [] merge(MusicWithIntensity) then {Merge MusicWithIntensity nil Facteur}
 	       [] H|T then {MixAux Interprete T Facteur Acc|{MixAux Interprete H Facteur nil}}
 	       end % fin case Music
 	    end % fin fun {MixAux}
+	    {Browse 'debut mixAux'}
 	    {MixAux Interprete Music 1.0  nil}
 	 end % fin local	    
       end
@@ -232,11 +284,9 @@ local Mix Interprete Projet CWD in
 	    end % fin fun{Flatten Partition}
 	    
 	    fun{NoteToEchantillon Note Duree DemiTons}
-	       local Octave Hauteur Nom I1 Ech in
-		  case Note of note(nom:Name octave:Oct alteration:Alt) then
-		     Nom=Note.nom
-		     Octave=Note.octave
-		     case Nom 
+	       local Hauteur I1 Ech in
+		  case Note of note(nom:Name octave:Octave alteration:Alt) then
+		     case Name 
 		     of a then I1=0
 		     [] b then I1=2 % 2 demitons entre a et b
 		     [] c then I1=~9 %-7-2 demitons entre a et c
@@ -245,10 +295,10 @@ local Mix Interprete Projet CWD in
 		     [] f then I1=~4 %-2-2 demitons entre a et f
 		     [] g then I1=~2 %-2 demitons entre a et g
 		     end % fin case Nom
-				if note.alteration=='#' then
-				Hauteur= (Octave-4)*12 + I1 + DemiTons +1
-				else Hauteur= (Octave-4)*12 + I1 + DemiTons 
-				end
+		     if Alt=='#' then
+			Hauteur= (Octave-4)*12 + I1 + DemiTons +1
+		     else Hauteur= (Octave-4)*12 + I1 + DemiTons 
+		     end
 		     echantillon(hauteur:Hauteur duree:Duree instrument:none)
 		  [] silence then silence(duree:Duree)
 		  end%fin du case
@@ -351,7 +401,7 @@ local Mix Interprete Projet CWD in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'joie.dj.oz'}
+      Music = {Projet.load CWD#'test.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -359,7 +409,7 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-      {Browse {Projet.run Mix Interprete Music CWD#'joieLisseFast.wav'}}
+      {Browse {Projet.run Mix Interprete Music CWD#'Test.wav'}}
    end
 end
 
