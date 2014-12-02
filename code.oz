@@ -3,8 +3,8 @@ local Mix Interprete Projet CWD in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre à votre système.
-   % CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zélie
-   CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
+    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zélie
+  % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne précédente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -25,7 +25,10 @@ local Mix Interprete Projet CWD in
       % Mix prends une musique et doit retourner un vecteur audio.
       fun {Mix Interprete Music}
 	 local MixAux ListEchantillonToAudio EchantillonToAudio Add Frequence Clip RepetitionNfois RepetitionDuree Echo Merge Fondu Pi=3.1415 in
-
+		
+		%%Fonction Add
+		%Arguments: Deux listes  L1 et L2 remplies float
+		%Valeur: Nouvelle liste de la taille de la liste passee en argument la plus longue. Chaque element = somme des elements des deux listes. La liste la plus courte est allongee par des 0.
 	    fun{Add List1 List2}
 	       local AddAux S1 S2 in
 		  S1={Length List1}
@@ -46,7 +49,8 @@ local Mix Interprete Projet CWD in
 	       end %end local
 	    end % en fun Add
 
-	    
+	    %%Fonction Frequence
+		%Argument
 	    fun{Frequence Hauteur}
 	       local R HtoFloat in
 		  {Int.toFloat Hauteur HtoFloat}
@@ -75,7 +79,7 @@ local Mix Interprete Projet CWD in
 			   if I>=DureeF*44100.0 then Vec
 			   else
 			      % Ajout du lissage
-			      if I<1000.0 then {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin*I/1000.0)|Vec Lissage+1.0}
+			      if I<500.0 then {EchToAudio Ech Fac I+1.0 (Fac*0.75*Sin*I/500.0)|Vec Lissage+1.0}
 			      elseif I>(DureeF*44100.0-1000.0) then { EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin*(I-DureeF*44100.0)/(~1000.0))|Vec Lissage-1.0}
 			      else {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin)|Vec 1000.0 } end % fin if lissage
 			   end % fin if dans le vecteur
