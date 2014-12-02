@@ -117,6 +117,7 @@ Pour la complexité temporelle, la fonction Interprete en elle-meme est en  $\va
 
 
 \section*{Extensions}
-Nous avons réalisé l'extension {\large \textbf{lissage}} en prenant comme fondu entre chaque note environ $\frac{1}{50} sec$, soit 1000 valeurs par vecteur audio d'une seconde. 
+Nous avons réalisé l'extension {\large \textbf{lissage}} et pour cela nous avons utilisé l'enveloppe ADSR \footnote{\url{http://fr.wikipedia.org/wiki/Enveloppe_sonore}}. Nous avons opté pour une attaque qui part d'une intensité de 0 à 1 sur 2000 valeurs du vecteurs audio, ensuite un déclin exponentiel en base deux de 1 à 0.5 d'intensité (sur 8000 valeurs), on maintient l'intensité à 0.5 jusque 4000 échantillons avant la fin du vecteur et à partir de là on redescend de manière linéaire jusque 0.
+
 
 \end{document}}

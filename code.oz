@@ -160,8 +160,8 @@ local Mix Interprete Projet CWD in
 
 		%%Fonction RepetitionDuree
 		%Argument: Duree=float. Musique=Liste de morceaux. Facteur=facteur d'intensite
-		%Valeur: Liste de float de taille Duree*44100.0
-		%Complexite:
+		%Valeur: Liste de float de taille n=Duree*44100.0
+		%Complexite: Spatiale en O(1) et temporelle en O(n) 
 	    fun{RepetitionDuree Duree Musique Facteur}
 	       local RepetitionAux L={MixAux Interprete Musique Facteur nil} in
 		  fun{RepetitionAux L1 Size Acc}
@@ -179,10 +179,10 @@ local Mix Interprete Projet CWD in
 		
 		%%Fonction echo
 		%Argument: Duree=float. Decadence=float. Music=liste de morceaux. Factuer=facteur d'intensite.
-		%Valeur: Liste de float de longueur Repetition*(Duree+taille vecteur audio Music). Duree= delai
+		%Valeur: Liste de float de longueur n=Repetition*(Duree+taille vecteur audio Music). Duree= delai
 		%		 entre le debut de la musique et le debut de l'echo. Repetition= nombre de fois qu'on repete
 		%		l'effet. Decadence= rapport entre l'intensite de l'echo et celle de la musique
-		%Complexite:
+		%Complexite: Spatiale en O(1) et temporelle en O(n) 
 	    fun{Echo Duree Decadence Repetition Music Facteur}
 	       local EchoAux in
 		  fun{EchoAux Music R Acc}
@@ -217,9 +217,11 @@ local Mix Interprete Projet CWD in
 		
 		
 		%%Fonction Fondu
-		%Argument: Ouverture=float. Fermeture=Float. Music=liste de morceaux. Facteur=Facteur d'intensite
-		%Valeur: 
-		%Complexite:
+		%Argument: Ouverture=float. Fermeture=Float. Music=liste de morceaux. Facteur=Facteur d'intensite 
+		%			Ouverture(resp. fermeture) est la duree au debut (resp. fin) de la musique
+		%			ou l'intensite va augmenter (resp. diminuer)
+		%Valeur: Liste de float de la meme longueur que le vecteur audio de Music
+		%Complexite: Spatiale en O(1) et temporelle en O(n) avec n=taille du vecteur audio relatif a music
 	    fun{Fondu Ouverture Fermeture Music Facteur}
 	       local DureeTot VecAudio FonduAux Douv=Ouverture*44100.0 Dferm in
 		  VecAudio={MixAux Interprete Music Facteur nil}
@@ -240,7 +242,12 @@ local Mix Interprete Projet CWD in
 	       end % fin local
 	    end % fin Fondu
 	    
-	       
+	    %%Fonction Couper
+		%Argument: In=float. Out=float. Musique=liste de morceaux. Facteur=Facteur d'intensite.
+		%			In(resp Out) represente le debut (resp. fin) de l'intervalle ou on desire
+		%			conserver la musique.
+		%Valeur: vecteur audio de la taille (Out-In)*44100.0. Vecteur silence si en dehors de la musique.
+		%Complexite: Spatiale O(1) et temporelle en O(n) avec n la taille du vecteur audio de musique
 	    fun{Couper In Out Musique Facteur}
 	       local VecAudio Size Decompte Debut=In*44100.0 Fin=Out*44100.0 in
 		  VecAudio={MixAux Interprete Musique Facteur nil}
@@ -276,7 +283,11 @@ local Mix Interprete Projet CWD in
 	       end
 	    end
 
-
+		%%Fonction FonduEnchaine
+		%Argument: Duree=float: duree de la transition entre les deux musiques. Music1 et Music2=
+		%			liste de morceaux. Facteur:facteur d'intensite
+		%Valeur: Vecteur audio de la taille (Music1+Music2)
+		%Complexite: Spatiale en O(1) et temporelle en O(n*m) avec n la longueur du vecteur audio de Music1 et m de Music2
 	    fun{FonduEnchaine Duree Music1 Music2 Facteur}
 	       local VecAudio1 VecAudio2 DureeMusic1 VecSilence VecAudio3 in
 		  VecAudio1={MixAux Interprete [fondu(ouverture:0.0 fermeture:Duree Music1)] Facteur nil}
@@ -294,6 +305,11 @@ local Mix Interprete Projet CWD in
 	       end % fin local
 	    end % fin Fondu
       
+	  
+		%%Fonction MixAux
+		%Argument: Interprete=fonction. Music=liste de morceaux. Facteur=Facteur d'intensite. Acc= vecteur audio a remplir
+		%Valeur: vecteur audio representant la musique.
+		%Complexite: Spatiale O(1) [que des fonctions en O(1)] et temporelle O(n)
 	    fun{MixAux Interprete  Music Facteur  Acc}
 	       case Music
 	       of nil then {Browse 'fin mix'}{Flatten Acc}
@@ -322,6 +338,11 @@ local Mix Interprete Projet CWD in
       % Interprete doit interpréter une partition
       fun {Interprete Partition}
 	 local Flatten NoteToEchantillon R InterpreteAux DureeTot in
+	 
+		%%Fonction Flatten
+		%Argument: Partition=liste pouvant contenir des listes imbriquees
+		%Valeur: Partition=liste sans plus aucune liste imbriquees
+		%Complexite: Spatiale O(1) et temporelle O(n) avec n la longueur de Partition
 	    fun{Flatten Partition}
 	       local 
 		  fun{FlattenAux List A}
@@ -334,6 +355,13 @@ local Mix Interprete Projet CWD in
 	       end % fin local
 	    end % fin fun{Flatten Partition}
 	    
+		
+		%%Fonction NoteToEchantillon
+		%Argument: Note=enregistrement. Duree=float. Demitons=Int
+		%Valeur: renvoie un echantillon sous la forme d'un enregistrement:
+		%		echantillon(hauteur:H duree:D instrument:I) avec H le nombre de demitons par rapport
+		%		a a4 le la de reference. D la duree de la note et instrument l'instrument utilise.
+		%Complexite: Spatiale et temporelle en O(1)
 	    fun{NoteToEchantillon Note Duree DemiTons}
 	       local Hauteur I1 Ech in
 		  case Note of note(nom:Name octave:Octave alteration:Alt) then
@@ -356,7 +384,11 @@ local Mix Interprete Projet CWD in
 	       end % fin local Octave Hauteur Nom I1 Ech
 	    end % fin fun{NoteToEchantillon Note Duree DemiTons}
 
-	       
+	    
+		%%Fonction DureeTot
+		%Argument: Partition=liste.
+		%Valeur: duree en float de l'ensemble des notes et transformations de la partition
+		%Complexite: Spatiale en O(1) et Temporelle en O(n) avec n la longueur de la partition
 	    fun {DureeTot Partition}
 	       local 
 		  fun{DureeTotAux Part Acc Inc}
@@ -379,7 +411,13 @@ local Mix Interprete Projet CWD in
 		  {DureeTotAux Partition 0.0 1.0}
 	       end % fin local 
 	    end % fin fun {DureeTot Partition}
-
+		
+		
+		%%Fonction InterpreteAux
+		%Argument: Partition=liste. Note=silence|nom|nomoctave|nom#octave Duree=float. Demitons=Int.
+		%			Acc=liste d'echantillons a remplir.
+		%Valeur: liste d'echantillons (Acc) contenant l'ensemble des notes et transformations de la partition
+		%Complexite: Variable selon la partition et les transformations qu'elle contient...
 	    fun {InterpreteAux Partition Note Duree DemiTons Acc}
 				%Case of Partition type
 	       case Partition
@@ -447,12 +485,13 @@ local Mix Interprete Projet CWD in
 	    {List.reverse {InterpreteAux  Partition nil 1 0 nil} R}
 	    R
 	    
-	 end % fin local Faltten NoteToEchantillon R InterpreteAux DureeTot
+	 end % fin local Flatten NoteToEchantillon R InterpreteAux DureeTot
       end % fin fun {Interprete Partition}
+     
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'test.dj.oz'}
+      Music = {Projet.load CWD#'joie.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -461,7 +500,8 @@ local Mix Interprete Projet CWD in
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
 	  {Browse start}
-      {Browse {Projet.run Mix Interprete Music CWD#'Test.wav'}}
+      {Browse {Projet.run Mix Interprete Music CWD#'joie.wav'}}
+  
    end
 end
 
