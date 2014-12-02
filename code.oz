@@ -2,18 +2,18 @@
 local Mix Interprete Projet CWD in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
-   % modifiez sa valeur pour correspondre à votre système.
-    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zélie
+   % modifiez sa valeur pour correspondre a votre systeme.
+    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zelie
   % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
-   % Si vous utilisez Mozart 1.4, remplacez la ligne précédente par celle-ci :
+   % Si vous utilisez Mozart 1.4, remplacez la ligne precedente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
    %
    % Projet fournit quatre fonctions :
    % {Projet.run Interprete Mix Music 'out.wav'} = ok OR error(...) 
    % {Projet.readFile FileName} = AudioVector OR error(...)
    % {Projet.writeFile FileName AudioVector} = ok OR error(...)
-   % {Projet.load 'music_file.dj.oz'} = La valeur oz contenue dans le fichier chargé (normalement une <musique>).
+   % {Projet.load 'music_file.dj.oz'} = La valeur oz contenue dans le fichier charge (normalement une <musique>).
    %
    % et une constante :
    % Projet.hz = 44100, la fréquence d'échantilonnage (nombre de données par seconde)
@@ -24,16 +24,16 @@ local Mix Interprete Projet CWD in
    in
       % Mix prends une musique et doit retourner un vecteur audio.
       fun {Mix Interprete Music}
-<<<<<<< HEAD
-	 local MixAux ListEchantillonToAudio EchantillonToAudio Add Frequence Clip RepetitionNfois RepetitionDuree Echo Merge Fondu Pi=3.1415 in
 		
-		%%Fonction Add
-		%Arguments: Deux listes  L1 et L2 remplies float
-		%Valeur: Nouvelle liste de la taille de la liste passee en argument la plus longue. Chaque element = somme des elements des deux listes. La liste la plus courte est allongee par des 0.
-=======
+
 	 local MixAux ListEchantillonToAudio EchantillonToAudio Add Frequence Clip RepetitionNfois RepetitionDuree Echo Merge Fondu Couper FonduEnchaine Pi=3.1415 in
 
->>>>>>> origin/master
+		%%Fonction Add
+		%Arguments: Deux listes  L1 et L2 remplies de float
+		%Valeur: Nouvelle liste de la taille de la liste passee en argument la plus longue. 
+		%		Chaque element = somme des elements des deux listes. 
+		%		La liste la plus courte est allongee par des 0.
+		%Complexite: Spatiale O(1), temporelle O(max(n,m)) ou n longueur de L1 et m longueur L2  
 	    fun{Add List1 List2}
 	       local AddAux S1 S2 in
 		  S1={Length List1}
@@ -55,7 +55,9 @@ local Mix Interprete Projet CWD in
 	    end % en fun Add
 
 	    %%Fonction Frequence
-		%Argument
+		%Argument: hauteur en int d'une note.
+		%Valeur: Frequence en float de cette note.
+		%Complexite: Spatiale et temporelle en O(1)
 	    fun{Frequence Hauteur}
 	       local R HtoFloat in
 		  {Int.toFloat Hauteur HtoFloat}
@@ -63,7 +65,13 @@ local Mix Interprete Projet CWD in
 		  R*440.0
 	       end %fin du local
 	    end%fin de la fonction frequence
-
+		
+		%%Fonction EchantillonToAudio
+		%Argument: Echantillon=echantillon(hauteur:H duree:S instrument:I) 
+		%		   avec H en int, S en float et I=none par defaut. Facteur=float représentant un facteur d'intensite
+		%		   utilise lors d'un merge et Acc une liste vide a remplir.
+		%Valeur: liste de float (Acc).
+		%Complexite: Spatiale et temporelle O(1) 
 	    fun{EchantillonToAudio Echantillon Facteur Acc}
 	       local F EchToAudio in
 		  fun{EchToAudio Ech Fac I Vec Lissage}
@@ -94,7 +102,11 @@ local Mix Interprete Projet CWD in
 		  {EchToAudio Echantillon Facteur 0.0 Acc 0.0}
 	       end % fin local
 	    end % fin EchantillonToAudio
-
+		
+		%%Fonction ListEchantillonToAudio
+		%Argument: Echantillon=liste d'echantillons et Facteur d'intensite
+		%Valeur: Liste de float
+		%Complexite: Spatiale O(1) et temporelle O(n)
 	    fun{ListEchantillonToAudio Echantillon Facteur}
 	       local LeToAudio in
 		  fun{LeToAudio ListEch Acc Facteur}
@@ -107,6 +119,11 @@ local Mix Interprete Projet CWD in
 	       end % fin local
 	    end % fin fun{ListEchantillonToAudio}
 
+		
+		%%Fonction Clip
+		%Argument: Up=float. Down=float. MusicClip=liste de morceaux. Facteur d'intensite.
+		%Valeur: Liste de float compris entre Down et Up
+		%Complexite: Spatiale  O(1) et temporelle O(n) avec n=taille du vecteur audio de MusicClip
 	    fun{Clip Up Down MusicClip Facteur}
 	       local ClipAux
 		  fun{ClipAux VecteurAudio Acc}
@@ -123,7 +140,12 @@ local Mix Interprete Projet CWD in
 		  {List.reverse {ClipAux {MixAux Interprete MusicClip Facteur  nil} nil }}
 	       end%fin du local ClipAux
 	    end%Fin de la fonction Clip
-
+		
+		
+		%%Fonction RepetitionNfois
+		%Argument: N=int. Music=liste de morceaux. Facteur d'intensite
+		%Valeur: Liste de float de taille N*(Taille du vecteur audio de Music)
+		%Complexite: Spatiale O(1) temporelle O(N*n) avec n=Taille du vecteur audio de Music
 	    fun{RepetitionNfois N Music Facteur}
 	       local
 		  fun{RepetitionAux N Acc}
@@ -131,12 +153,15 @@ local Mix Interprete Projet CWD in
 		     else{RepetitionAux N-1 {MixAux Interprete Music Facteur nil}|Acc}
 		     end % fin if else
 		  end % fin RepetitionAux
-		  
-	       in
+		   in
 		  {List.flatten {RepetitionAux N nil}}
 	       end % fin local
 	    end % fin RepetitionNfois
 
+		%%Fonction RepetitionDuree
+		%Argument: Duree=float. Musique=Liste de morceaux. Facteur=facteur d'intensite
+		%Valeur: Liste de float de taille Duree*44100.0
+		%Complexite:
 	    fun{RepetitionDuree Duree Musique Facteur}
 	       local RepetitionAux L={MixAux Interprete Musique Facteur nil} in
 		  fun{RepetitionAux L1 Size Acc}
@@ -150,7 +175,14 @@ local Mix Interprete Projet CWD in
 		  {RepetitionAux L Duree*44100 nil}
 	       end % fin local
 	    end % fin RepetitionDuree
-
+		
+		
+		%%Fonction echo
+		%Argument: Duree=float. Decadence=float. Music=liste de morceaux. Factuer=facteur d'intensite.
+		%Valeur: Liste de float de longueur Repetition*(Duree+taille vecteur audio Music). Duree= delai
+		%		 entre le debut de la musique et le debut de l'echo. Repetition= nombre de fois qu'on repete
+		%		l'effet. Decadence= rapport entre l'intensite de l'echo et celle de la musique
+		%Complexite:
 	    fun{Echo Duree Decadence Repetition Music Facteur}
 	       local EchoAux in
 		  fun{EchoAux Music R Acc}
@@ -171,13 +203,23 @@ local Mix Interprete Projet CWD in
 	       end
 	    end
 	    
+		
+		%%Fonction Merge
+		%Argument: MusicWithIntensity=liste de morceaux. Acc=liste de float a remplir. Facteur=facteur d'intensite
+		%Valeur: Liste de float(Acc)= (vecteur audio de MusicWithIntensity * Facteur)
+		%Complexite: Spatiale O(1) Temporelle O(n) ou n=longueur de MusicWithIntensity
 	    fun{Merge MusicWithIntensity Acc Facteur}
 	       case MusicWithIntensity
 	       of nil then Acc
 	       [] H|T then{Merge T {Add {MixAux Interprete H.2 Facteur*H.1 nil} Acc}Facteur}
 	       end
 	    end
-
+		
+		
+		%%Fonction Fondu
+		%Argument: Ouverture=float. Fermeture=Float. Music=liste de morceaux. Facteur=Facteur d'intensite
+		%Valeur: 
+		%Complexite:
 	    fun{Fondu Ouverture Fermeture Music Facteur}
 	       local DureeTot VecAudio FonduAux Douv=Ouverture*44100.0 Dferm in
 		  VecAudio={MixAux Interprete Music Facteur nil}
@@ -207,7 +249,7 @@ local Mix Interprete Projet CWD in
 		     case Vec 
 		     of nil then Acc
 		     [] H|T then
-			if Begin=<1.0 andthen End>0.0 then {Decompte Begin End-1.0 T H|Acc} % Begin=<1.0 pour inclure la valeur du pt de départ
+			if Begin=<0.0 andthen End>0.0 then {Decompte Begin End-1.0 T H|Acc} % Begin=<1.0 pour inclure la valeur du pt de départ
 			elseif End=<0.0 then Acc
 			else {Decompte Begin-1.0 End-1.0 T Acc}
 			end
@@ -418,6 +460,7 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
+	  {Browse start}
       {Browse {Projet.run Mix Interprete Music CWD#'Test.wav'}}
    end
 end
