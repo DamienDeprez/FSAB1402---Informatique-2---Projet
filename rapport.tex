@@ -5,20 +5,20 @@
 
 \include{PageDeGarde}
 
-
-Dans ce présent rapport nous allons vous présenter les fonctions que nous avons implémentées dans le cadre du projet du cours d'informatique en deuxième année de bachelier en ingénieur civil. Nous vous détaillerons dans ce rapport la structure de notre programme, les décisions que nous avons prises, les difficultées rencontrées ainsi que les limites et problemes de notre implémentation, nous finirons par estimer la complexité de nos fonctions. Le code dans son entièreté ne se retrouvera pas dans ce rapport.
+\vspace*{5cm}
+Dans ce rapport, nous allons vous présenter les fonctions que nous avons implémentées dans le cadre du projet du cours d'informatique en deuxième année de bachelier en ingénieur civil. Nous y détaillerons la structure de notre programme, les décisions que nous avons prises, les difficultés rencontrées ainsi que les limites et problèmes de notre implémentation. Nous finirons par l'estimation de la complexité de nos fonctions ainsi que par son extension. Par contre, l'entièreté du code ne se trouve pas dans ce rapport. Vous ne trouverez pas non plus de partie concernant les constructions non-déclaratives car nous n'en n'utilisons pas.
 
 \section*{Structure du programme}
-Les deux fonctions principales de notre programme étant relativement indépendantes dans leur implémentation et leurs besoins, nous avons décidé de déclarer les sous-fonctions relatives à chaque fonction à l'intérieur de celles-ci.
+Les deux fonctions principales de notre programme étant relativement indépendantes dans leur implémentation et leurs besoins, nous avons décidé de déclarer les sous-fonctions relatives à chaque fonction à l'intérieur de celle-ci.
 \begin{lstlisting}[frame=single] 
 fun{Interprete Partition}
 	--Sous-Fonctions--
 fun{Mix Interprete Music}
 	--Sous-Fonctions--
 \end{lstlisting}
-
-\subsection*{Intepréter une partition}
-Globalement la structure de la fonction Interprete est reprise ci dessous. Nous avons veillé à ce qu'elle soit récursive terminale, pour cela nous avons donc créé une fonction InterpreteAux reprenant un certains nombre de paramètres en plus que l'originale. 
+\newpage
+\subsection*{Interpréter une partition}
+Globalement, la structure de la fonction \textit{\textbf{Interprete}} est reprise ci dessous. Nous avons veillé à ce qu'elle soit récursive terminale. Pour cela, nous avons donc créé une fonction \textit{\textbf{InterpreteAux}} reprenant un certain nombre d'arguments supplémentaires à ceux de la fonction \textit{\textbf{Interprete}}. 
 \begin{lstlisting}[frame=single] 
 fun{Interprete Partition}
 	fun{Flatten Partition} %Permet de "deplier" les partitions pour ne plus avoir de listes imbriquees
@@ -27,7 +27,7 @@ fun{Interprete Partition}
 	fun {InterpreteAux Partition Note Duree DemiTons Acc}
 		case Partition
 		[] nil %On renvoie l'accumulateur
-		[] Note % decuple en plusieurs case en fonction du format de la note
+		[] Note % decuple en plusieurs cas en fonction du format de la note
 		[] muet(TPartition)
 		[] etirer(facteur:F TPartition)
 		[] duree(seconde:S TPartition)
@@ -35,22 +35,19 @@ fun{Interprete Partition}
 		[] transpose(demitons:DemiTons TPartition)
 		[] H|T			
 \end{lstlisting}
-
-Notre fonction InterpreteAux a donc comme paramètres Partition, Note, Duree, DemiTons et Acc (un accumulateur). Regardons leur utilité plus en détail:
+Notre fonction \textit{\textbf{InterpreteAux}} a donc comme arguments \textit{Partition, Note, Duree, DemiTons} et \textit{Acc} (un accumulateur). Regardons leur utilité plus en détail:
 \begin{itemize}
-\item Partition: rien de surprenant ici puisque la fonction interprete à pour but premier d'interpreter une partition. 
-\item Note: par défaut = nil, cet argument est utile lors des transformations muet et bourdon.
-\item Duree: utilisé pour les transformations duree et etirer. 1 par défaut.
-\item Demitons: cas d'une transformation transpose. 0 par défaut
-\item Acc: l'accumulateur comme on peut s'en douter est utile pour la récursion terminale, car au fur et à mesure qu'on parcourt la partition il stocke les notes converties en échantillons. 
+\item \textit{Partition}: Cet argument est la base de la fonction \textit{\textbf{InterpreteAux}} qui a pour but premier d’interpréter une partition. 
+\item \textit{Note}: par défaut = nil. Cet argument est utilisé lors des transformations \textbf{muet} et \textbf{bourdon}.
+\item \textit{Duree}: par défaut = 1. Cet argument est utilisé pour les transformations \textbf{duree} et \textbf{etirer}.
+\item \textit{Demitons}: par défaut = 0. Cet argument est utilisé pour la transformation \textbf{transpose}.
+\item \textit{Acc}: l'accumulateur est utilisé pour la récursion terminale. Au fur et à mesure qu'on parcourt la partition, il stocke les notes converties en échantillons.
 \end{itemize}
+	Comme chaque transformation s'applique sur une partition, nous avons utilisé la récursion pour interpréter les partitions modifiées en changeant les différents arguments de notre fonction auxiliaire \textit{\textbf {InterpreteAux}}. 
 
-
-Comme chaque transformation s'applique sur une partition, nous avons utilisé la récursion pour interpreter les partitions modifiées en changeant les différents paramètres de notre fonction auxiliaire. 
-
-
+\newpage
 \subsection*{Mixer la musique}
-Le gros de la structure de notre fonction Mix et des sous fonctions qu'elle utilise est donnée ci-dessous.
+La base de la structure de notre fonction \textit{\textbf{Mix}} et des sous-fonctions qu'elle utilise est donnée ci-dessous.
 
 \begin{lstlisting}[frame=single] 
 fun{Frequence Hauteur}
@@ -82,20 +79,20 @@ fun{MixAux Interprete  Music Facteur  Acc}
 	[] merge(MusicWithIntensity) then {Merge MusicWithIntensity nil Facteur}
 	[] H|T then {MixAux Interprete T Facteur Acc|{MixAux Interprete H Facteur nil}}
 \end{lstlisting}
-La fonction Mix était plus exigente au niveau des transformations, pour plus de lisibilités nous avons donc fait des sous-fonctions pour chacun des cas pouvant se présenter. 
-Par rapport aux argument de notre fonction MixAux, nous avons utilisé un Facteur pour le cas où on avait une musique avec intensité et un accumulateur pour faire de la récursion terminale.
+La fonction \textit{\textbf{Mix}} est plus exigeante au niveau des transformations. Pour plus de lisibilité, nous avons fait des sous-fonctions pour chacun des cas pouvant se présenter. 
+Par rapport aux arguments de notre fonction \textit{\textbf{MixAux}}, nous avons utilisé l'argument \textit{Facteur} pour pouvoir varier l'intensité de la musique. Nous avons également utilisé un accumulateur pour faire de la récursion terminale.
 
 
 
 \section*{Difficultés rencontrées, limitations et problèmes connus}
 \begin{itemize}
-\item Etant un binome de deux \textbf{non-musiciens}, le vocabulaire lié à la musique nous a posé quelques problèmes lors de la compréhension du problème, mais également lors de l'implémentation de certaines fonctions
+\item Etant un binôme de deux \textbf{non-musiciens}, le vocabulaire lié à la musique nous a posé quelques difficultés lors de la compréhension du problème, mais également lors de l'implémentation de certaines fonctions.
 
-\item Lors des différents tests de notre programme, nous avons eu des \textbf{parse error} à de nombreuses reprises, malheureusement Mozart n'est pas toujours très explicite dans ses erreurs et nous avons passé beaucoup de temps à les dénicher. 
+\item Lors des différents tests de notre programme, nous avons eu des \textbf{parse error} à de nombreuses reprises.  Malheureusement, Mozart n'est pas toujours très explicite dans ses messages d'erreur et nous avons passé beaucoup de temps à les rechercher. 
  
-\item Pas moyen de mettre des \textbf{points d'arret} dans Mozart lors des tests ce qui complique les recherches d'erreurs.
+\item Lors des tests, nous n'avions pas encore trouvé comment mettre des \textbf{points d'arrêt} dans Mozart. Ceci complique les recherches des erreurs.
 
-\item Un des problèmes connus de notre fonction est sans doute qu'à plusieurs reprises nous devons appliquer un Reverse (opération tout de meme relativement couteuse pour des listes de grande ampleur) sur les listes à lire ou créer. 
+\item Un des problèmes connus de notre fonction est le suivant: à plusieurs reprises, nous appliquons un \textit{\textbf{Reverse}} sur les listes à lire ou créer. Cette opération est tout de même relativement coûteuse pour des listes de grande ampleur.  
 
  
 \end{itemize}
@@ -109,15 +106,14 @@ Par rapport aux argument de notre fonction MixAux, nous avons utilisé un Facteu
 %\item Les fonction {Clip Up Down VecteurAudio}, {EchantillonToAudio Echantillon Facteur Acc} ont une complexité spatiale et temporelle en $\vartheta(n)$. %car elle doit parcourir tout le VecteurAudio et le réécrire. 
 %\item La fonction {Add List1 List2} a une complexité spatiale en $\vartheta(n^2)$ et une complexité temporelle en $\vartheta(n)$
 
-\item Fonction interprete: a une complexité spatiale en $\vartheta(1)$, car elle est récursive terminale.
-Pour la complexité temporelle, la fonction Interprete en elle-meme est en  $\vartheta(n)$ et toutes les sous fonctions qu'elle utilise également, ce qui nous donne une complexité temporelle  générale pour la fonction en  $\vartheta(n)$
-\item Fonction Mix: tout comme la fonction interprete, nous avons rendu la fonction mix récursive terminale, elle a donc une complexité spatiale en  $\vartheta(1)$. Par contre pour la complexité temporelle, la fonction Mix a une complexité temporelle en  $\vartheta(n)$, mais elle utilise certaines fonctions ayant une complexité en  $\vartheta(n^2)$ (par exemple al fonction Repetition) , elle a donc une complexité générale en  $\vartheta(n^2)$
+\item Fonction \textit{\textbf{Interprete}}: Cette fonction a une complexité spatiale en $\vartheta(1)$, car elle est récursive terminale.
+Pour la complexité temporelle, la fonction \textit{\textbf {Interprete}} en elle-même est en  $\vartheta(n)$ et de même pour toutes les sous-fonctions qu'elle utilise. Ceci nous donne une complexité temporelle  générale pour la fonction en  $\vartheta(n)$
+\item Fonction \textit{\textbf{Mix}}: Tout comme la fonction \textit{\textbf{Interprete}}, la fonction \textit{\textbf{Mix}} est récursive terminale. Elle a donc une complexité spatiale en  $\vartheta(1)$. Par contre, pour la complexité temporelle, la fonction \textit{\textbf{Mix}} a une complexité temporelle en  $\vartheta(n)$. De plus, comme elle utilise certaines fonctions ayant une complexité en  $\vartheta(n^2)$ (par exemple la fonction \textit{\textbf{Repetition}}) , elle a donc une complexité générale en  $\vartheta(n^2)$
 
 \end{itemize} 
 
 
-\section*{Extensions}
-Nous avons réalisé l'extension {\large \textbf{lissage}} et pour cela nous avons utilisé l'enveloppe ADSR \footnote{\url{http://fr.wikipedia.org/wiki/Enveloppe_sonore}}. Nous avons opté pour une attaque qui part d'une intensité de 0 à 1 sur 2000 valeurs du vecteurs audio, ensuite un déclin exponentiel en base deux de 1 à 0.5 d'intensité (sur 8000 valeurs), on maintient l'intensité à 0.5 jusque 4000 échantillons avant la fin du vecteur et à partir de là on redescend de manière linéaire jusque 0.
-
+\section*{Extension}
+Nous avons réalisé l'extension {\large \textbf{lissage}} et pour cela nous avons utilisé l'enveloppe ADSR \footnote{\url{http://fr.wikipedia.org/wiki/Enveloppe_sonore}}. Nous avons opté pour une attaque qui part d'une intensité de 0 à 1 sur 2000 valeurs du vecteur audio. Ensuite, nous avons un déclin exponentiel en base deux de 1 à 0.5 d'intensité (sur 8000 valeurs). Puis, nous maintenons l'intensité à 0.5 jusque 4000 valeurs avant la fin du vecteur. A partir de là, nous redescendons de manière linéaire jusqu'à 0.
 
 \end{document}}
