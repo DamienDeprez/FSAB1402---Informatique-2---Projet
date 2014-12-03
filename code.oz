@@ -3,8 +3,8 @@ local Mix Interprete Projet CWD TStart TEnd in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre a votre systeme.
-    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/FSAB1402---Informatique-2---Projet/'}%Zelie
-  % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
+   % CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zelie
+   CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne precedente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -138,7 +138,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 		     end%fin du case VecteurAudio
 		  end %fin de la fonction ClipAux
 	       in
-		  {List.reverse {ClipAux {MixAux Interprete MusicClip Facteur  nil} nil }}
+		  {Reverse {ClipAux {MixAux Interprete MusicClip Facteur nil} nil }}
 	       end%fin du local ClipAux
 	    end%Fin de la fonction Clip
 		
@@ -167,13 +167,13 @@ local Mix Interprete Projet CWD TStart TEnd in
 	       local RepetitionAux L={MixAux Interprete Musique Facteur nil} in
 		  fun{RepetitionAux L1 Size Acc}
 		     case L1
-		     of nil andthen Size=<0 then Acc
-		     [] nil andthen Size>0 then{RepetitionAux L Size Acc}
-		     [] H|T  andthen Size>0 then{RepetitionAux T Size-1 H|Acc}
-		     [] H|T andthen Size==0 then Acc
+		     of nil andthen Size=<0.0 then Acc
+		     [] nil andthen Size>0.0 then{RepetitionAux L Size Acc}
+		     [] H|T  andthen Size>0.0 then{RepetitionAux T Size-1.0 H|Acc}
+		     [] H|T andthen Size==0.0 then Acc
 		     end % fin case L1
 		  end % fin RepetitionAux
-		  {RepetitionAux L Duree*44100 nil}
+		 {Reverse {RepetitionAux L Duree*44100.0 nil}}
 	       end % fin local
 	    end % fin RepetitionDuree
 		
@@ -325,7 +325,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	       [] fondu_enchaine(duree:S MusiC1 MusiC2) then {FonduEnchaine S MusiC1 MusiC2 Facteur}
 	       [] couper(debut:S1 fin:S2 MusiC) then{Couper S1 S2 MusiC Facteur}
 	       [] merge(MusicWithIntensity) then {Merge MusicWithIntensity nil Facteur}
-	       [] H|T then {MixAux Interprete T Facteur Acc|{MixAux Interprete H Facteur nil}}
+	       [] H|T then {MixAux Interprete T Facteur {Append Acc {MixAux Interprete H Facteur nil}}}
 	       end % fin case Music
 	    end % fin fun {MixAux}
 	    {Flatten {MixAux Interprete Music 1.0  nil}}
@@ -434,7 +434,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 		     else {Int.toFloat Duree DureeF}
 			{InterpreteAux {Flatten TPartition} Note DureeF*F DemiTons Acc} end
 		  end
-	       [] duree(seconde:S TPartition) then
+	       [] duree(secondes:S TPartition) then
 		  local DureeTotale DureeTotF DureeIniF IsFloat in
 		     DureeTotale={DureeTot {Flatten TPartition}}
 		     {Float.is DureeTotale IsFloat}
@@ -485,7 +485,7 @@ local Mix Interprete Projet CWD TStart TEnd in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'missionImpossible.dj.oz'}
+      Music = {Projet.load CWD#'example.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -503,13 +503,12 @@ local Mix Interprete Projet CWD TStart TEnd in
 	 {Browse TMixEnd-TMixStart}
 	 {Browse 'start encoding'}
 	 TStart={Time.time}
-	 {Browse {Projet.writeFile CWD#'MissionImpossible.wav' VecAudioFinal}}
+	 {Browse {Projet.writeFile CWD#'out.wav' VecAudioFinal}}
 	% {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
 	 TEnd={Time.time}
 	 {Browse 'end encoding'}
 	 {Browse TEnd-TStart}
       end
-
    end
 end
 
