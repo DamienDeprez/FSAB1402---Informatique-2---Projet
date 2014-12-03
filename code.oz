@@ -212,7 +212,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	    fun{Merge MusicWithIntensity Acc Facteur}
 	       case MusicWithIntensity
 	       of nil then Acc
-	       [] H|T then{Merge T {Add {MixAux Interprete H.2 Facteur*H.1 nil} Acc}Facteur}
+	       [] H|T then{Browse merge}{Browse {Length Acc}}{Merge T {Add {Flatten {MixAux Interprete H.2 Facteur*H.1 nil}} Acc}Facteur}
 	       end
 	    end
 		
@@ -462,11 +462,13 @@ local Mix Interprete Projet CWD TStart TEnd in
 
 	       [] H|T then
 		  {InterpreteAux T Note Duree DemiTons {InterpreteAux H Note Duree DemiTons Acc}}
+		  
+	       [] silence then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon silence Duree DemiTons}|Acc}
 
 	       [] Atom then
 		  case {AtomToString Atom}
 		  of [N] then
-		     if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:Atom octave:4 alteration:none) Duree DemiTons}|Acc}
+		     if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:{StringToAtom [N]} octave:4 alteration:none) Duree DemiTons}|Acc}
 		     else {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon Note Duree DemiTons}|Acc} end
 		  [] [N O] then
 		     if Note==nil then {InterpreteAux nil nil Duree DemiTons {NoteToEchantillon note(nom:{StringToAtom [N]} octave:{StringToInt [O]} alteration:none) Duree DemiTons}|Acc}
@@ -483,7 +485,7 @@ local Mix Interprete Projet CWD TStart TEnd in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'joie.dj.oz'}
+      Music = {Projet.load CWD#'missionImpossible.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -500,7 +502,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	 {Browse TMixEnd-TMixStart}
 	 {Browse 'start encoding'}
 	 TStart={Time.time}
-	 {Browse {Projet.writeFile CWD#'Out.wav' VecAudioFinal}}
+	 {Browse {Projet.writeFile CWD#'MissionImpossible.wav' VecAudioFinal}}
 	% {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
 	 TEnd={Time.time}
 	 {Browse 'end encoding'}
