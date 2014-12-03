@@ -40,7 +40,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 		  S2={Length List2}
 		  fun{AddAux L1 L2 Acc}
 		     case L1
-		     of nil then{Browse 'add fin'} Acc
+		     of nil then Acc
 		     [] H1|T1 then
 			case L2
 			of nil then {AddAux T1 nil H1|Acc}
@@ -212,7 +212,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	    fun{Merge MusicWithIntensity Acc Facteur}
 	       case MusicWithIntensity
 	       of nil then Acc
-	       [] H|T then{Browse merge}{Browse {Length Acc}}{Merge T {Add {Flatten {MixAux Interprete H.2 Facteur*H.1 nil}} Acc}Facteur}
+	       [] H|T then{Merge T {Add {Flatten {MixAux Interprete H.2 Facteur*H.1 nil}} Acc}Facteur}
 	       end
 	    end
 		
