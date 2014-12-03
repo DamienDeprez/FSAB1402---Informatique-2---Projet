@@ -1,10 +1,10 @@
 % Vous ne pouvez pas utiliser le mot-clé 'declare'.
-local Mix Interprete Projet CWD in
+local Mix Interprete Projet CWD TStart TEnd in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre a votre systeme.
-    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/FSAB1402---Informatique-2---Projet/'}%Zelie
-  % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
+   % CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zelie
+   CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne precedente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -92,8 +92,9 @@ local Mix Interprete Projet CWD in
 			   if I>=DureeF*44100.0 then Vec
 			   else
 			      % Ajout du lissage
-			      if I<500.0 then {EchToAudio Ech Fac I+1.0 (Fac*0.75*Sin*I/500.0)|Vec Lissage+1.0}
-			      elseif I>(DureeF*44100.0-1000.0) then { EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin*(I-DureeF*44100.0)/(~1000.0))|Vec Lissage-1.0}
+			      if I=<2000.0 then {EchToAudio Ech Fac I+1.0 (Fac*Sin*I/2000.0)|Vec Lissage+1.0}
+			      elseif I>2000.0 andthen I=<10000.0 then {EchToAudio Ech Fac I+1.0 (Fac*Sin*{Pow 2.0 (~0.000125*I+0.25)})|Vec Lissage+1.0}
+			      elseif I>(DureeF*44100.0-4000.0) then { EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin*(I-DureeF*44100.0)/(~4000.0))|Vec Lissage-1.0}
 			      else {EchToAudio Ech Fac I+1.0 (Fac*0.5*Sin)|Vec 1000.0 } end % fin if lissage
 			   end % fin if dans le vecteur
 			end % fin case echantillon
@@ -297,10 +298,7 @@ local Mix Interprete Projet CWD in
 		  VecSilence={MixAux Interprete [voix([silence(duree:(DureeMusic1-Duree))])] Facteur nil}
 		 % Fondu1=fondu(ouverture=0.0, fermeture={IntToFloat L1}-(Duree*44100.0) Music1) 
 		 % Fondu2=fondu(ouverture=(Duree*44100.0) fermeture=0.0 Music2)
-		  {Browse 'debut append'}
 		  VecAudio3={Append VecSilence VecAudio2}
-		  {Browse 'append fin'}
-		  {Browse 'add debut'}
 		  {Add VecAudio1 VecAudio3}
 	       end % fin local
 	    end % fin Fondu
@@ -312,7 +310,7 @@ local Mix Interprete Projet CWD in
 		%Complexite: Spatiale O(1) [que des fonctions en O(1)] et temporelle O(n)
 	    fun{MixAux Interprete  Music Facteur  Acc}
 	       case Music
-	       of nil then {Browse 'fin mix'}{Flatten Acc}
+	       of nil then Acc
 	       [] voix(Voix) then {ListEchantillonToAudio Voix Facteur}
 	       [] partition(Partition) then {ListEchantillonToAudio {Interprete Partition} Facteur}
 	       [] wave(File) then {Projet.readFile File}
@@ -330,19 +328,13 @@ local Mix Interprete Projet CWD in
 	       [] H|T then {MixAux Interprete T Facteur Acc|{MixAux Interprete H Facteur nil}}
 	       end % fin case Music
 	    end % fin fun {MixAux}
-	    {Browse 'debut mixAux'}
-	    {MixAux Interprete Music 1.0  nil}
+	    {Flatten {MixAux Interprete Music 1.0  nil}}
 	 end % fin local	    
       end
 
       % Interprete doit interpréter une partition
       fun {Interprete Partition}
 	 local Flatten NoteToEchantillon R InterpreteAux DureeTot in
-	 
-		%%Fonction Flatten
-		%Argument: Partition=liste pouvant contenir des listes imbriquees
-		%Valeur: Partition=liste sans plus aucune liste imbriquees
-		%Complexite: Spatiale O(1) et temporelle O(n) avec n la longueur de Partition
 	    fun{Flatten Partition}
 	       local 
 		  fun{FlattenAux List A}
@@ -499,9 +491,21 @@ local Mix Interprete Projet CWD in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-	  {Browse start}
-      {Browse {Projet.run Mix Interprete Music CWD#'joie.wav'}}
-  
+      local TMixStart TMixEnd VecAudioFinal in
+	 {Browse 'begin Mixing'}
+	 TMixStart={Time.time}
+	 VecAudioFinal={Mix Interprete Music}
+	 TMixEnd={Time.time}
+	 {Browse 'end Mixing'}
+	 {Browse TMixEnd-TMixStart}
+	 {Browse 'start encoding'}
+	 TStart={Time.time}
+	 {Browse {Projet.writeFile CWD#'Out.wav' VecAudioFinal}}
+	% {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
+	 TEnd={Time.time}
+	 {Browse 'end encoding'}
+	 {Browse TEnd-TStart}
+      end
    end
 end
 
