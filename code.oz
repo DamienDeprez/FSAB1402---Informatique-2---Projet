@@ -484,7 +484,7 @@ local Mix Interprete Projet CWD  in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'example.dj.oz'}
+      Music = {Projet.load CWD#'exemple.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
