@@ -3,7 +3,7 @@ local Mix Interprete Projet CWD in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre a votre systeme.
-    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zelie
+    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/FSAB1402---Informatique-2---Projet/'}%Zelie
   % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne precedente par celle-ci :
