@@ -491,7 +491,7 @@ local Mix Interprete Projet CWD in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'joie.dj.oz'}
+      Music = {Projet.load CWD#'missionImpossible.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -500,7 +500,7 @@ local Mix Interprete Projet CWD in
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
 	  {Browse start}
-      {Browse {Projet.run Mix Interprete Music CWD#'joie.wav'}}
+      {Browse {Projet.run Mix Interprete Music CWD#'impossible.wav'}}
   
    end
 end
