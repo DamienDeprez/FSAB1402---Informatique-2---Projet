@@ -434,7 +434,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 		     else {Int.toFloat Duree DureeF}
 			{InterpreteAux {Flatten TPartition} Note DureeF*F DemiTons Acc} end
 		  end
-	       [] duree(seconde:S TPartition) then
+	       [] duree(secondes:S TPartition) then
 		  local DureeTotale DureeTotF DureeIniF IsFloat in
 		     DureeTotale={DureeTot {Flatten TPartition}}
 		     {Float.is DureeTotale IsFloat}
@@ -504,7 +504,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	 {Browse 'start encoding'}
 	 TStart={Time.time}
 	 {Browse {Projet.writeFile CWD#'MissionImpossible.wav' VecAudioFinal}}
-	% {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
+	 {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
 	 TEnd={Time.time}
 	 {Browse 'end encoding'}
 	 {Browse TEnd-TStart}
