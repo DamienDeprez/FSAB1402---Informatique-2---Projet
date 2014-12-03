@@ -7,8 +7,8 @@ local
 	Musique2=[partition(TPartition)]
 in
    % Ceci est une musique avec les transformations sur les musiques et les partitions
-   [Musique2 repetition(nombre:2 Musique1) repetition(duree:4.0 Musique1) clip(bas:0.25 haut:0.1 Musique1) echo(delai:4.0 Musique1)  echo(delai:4.0 decadence:0.5 Musique1) echo(delai:4.0 decadence:0.5 repetition:2 Musique1) fondu(ouverture:2.0 fermeture:3.0 Musique1) fondu_enchaine(duree:2.0 Musique1 Musique1) couper(debut:0.5 fin:2.0 Musique1) renverser(Musique1)] 
-	% avec ce test, nous avons l'erreur suivante dans mozart au moment de l'ecriture
+   [Musique2 repetition(nombre:2 Musique1) repetition(duree:4.0 Musique1) clip(bas:0.25 haut:0.1 Musique1) fondu_enchaine(duree:2.0 Musique1 Musique1) couper(debut:0.5 fin:2.0 Musique1)] 
+	% avec [Musique2 repetition(nombre:2 Musique1) repetition(duree:4.0 Musique1) clip(bas:0.25 haut:0.1 Musique1) fondu_enchaine(duree:2.0 Musique1 Musique1) couper(debut:0.5 fin:2.0 Musique1) echo(delai:4.0 Musique1) echo(delai:4.0 decadence:0.5 Musique1) echo(delai:4.0 decadence:0.5 repetition:2 Musique1) renverser(Musique1)], nous avons l'erreur suivante dans mozart au moment de l'ecriture
 	% du fichier au format .wav
 	% la duree de la  musique est normalement de 146 secondes
 		%FATAL: The active memory (732096708) after a GC is over the maximal heap size threshold: 732096600

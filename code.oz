@@ -294,7 +294,6 @@ local Mix Interprete Projet CWD TStart TEnd in
 		  VecAudio1={MixAux Interprete [fondu(ouverture:0.0 fermeture:Duree Music1)] Facteur nil}
 		  VecAudio2={MixAux Interprete [fondu(ouverture:Duree fermeture:0.0 Music2)] Facteur nil}
 		  DureeMusic1={IntToFloat {Length VecAudio1}}/44100.0
-		  {Browse DureeMusic1-Duree}
 		  VecSilence={MixAux Interprete [voix([silence(duree:(DureeMusic1-Duree))])] Facteur nil}
 		 % Fondu1=fondu(ouverture=0.0, fermeture={IntToFloat L1}-(Duree*44100.0) Music1) 
 		 % Fondu2=fondu(ouverture=(Duree*44100.0) fermeture=0.0 Music2)
@@ -494,21 +493,8 @@ local Mix Interprete Projet CWD TStart TEnd in
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
 
-      local TMixStart TMixEnd VecAudioFinal in
-	 {Browse 'begin Mixing'}
-	 TMixStart={Time.time}
-	 VecAudioFinal={Mix Interprete Music}
-	 TMixEnd={Time.time}
-	 {Browse 'end Mixing'}
-	 {Browse TMixEnd-TMixStart}
-	 {Browse 'start encoding'}
-	 TStart={Time.time}
-	 {Browse {Projet.writeFile CWD#'out.wav' VecAudioFinal}}
-	% {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
-	 TEnd={Time.time}
-	 {Browse 'end encoding'}
-	 {Browse TEnd-TStart}
-      end
+	 {Browse {Projet.run Mix Interprete Music CWD#'out.wav'}}
+
    end
 end
 
