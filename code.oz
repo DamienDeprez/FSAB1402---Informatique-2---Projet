@@ -1,10 +1,10 @@
 % Vous ne pouvez pas utiliser le mot-clé 'declare'.
-local Mix Interprete Projet CWD TStart TEnd in
+local Mix Interprete Projet CWD  in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre a votre systeme.
-    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/FSAB1402---Informatique-2---Projet/'}%Zelie
-  % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
+   % CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zelie
+   CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne precedente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -138,7 +138,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 		     end%fin du case VecteurAudio
 		  end %fin de la fonction ClipAux
 	       in
-		  {List.reverse {ClipAux {MixAux Interprete MusicClip Facteur  nil} nil }}
+		  {Reverse {ClipAux {MixAux Interprete MusicClip Facteur nil} nil }}
 	       end%fin du local ClipAux
 	    end%Fin de la fonction Clip
 		
@@ -167,13 +167,13 @@ local Mix Interprete Projet CWD TStart TEnd in
 	       local RepetitionAux L={MixAux Interprete Musique Facteur nil} in
 		  fun{RepetitionAux L1 Size Acc}
 		     case L1
-		     of nil andthen Size=<0 then Acc
-		     [] nil andthen Size>0 then{RepetitionAux L Size Acc}
-		     [] H|T  andthen Size>0 then{RepetitionAux T Size-1 H|Acc}
-		     [] H|T andthen Size==0 then Acc
+		     of nil andthen Size=<0.0 then Acc
+		     [] nil andthen Size>0.0 then{RepetitionAux L Size Acc}
+		     [] H|T  andthen Size>0.0 then{RepetitionAux T Size-1.0 H|Acc}
+		     [] H|T andthen Size==0.0 then Acc
 		     end % fin case L1
 		  end % fin RepetitionAux
-		  {RepetitionAux L Duree*44100 nil}
+		 {Reverse {RepetitionAux L Duree*44100.0 nil}}
 	       end % fin local
 	    end % fin RepetitionDuree
 		
@@ -294,7 +294,6 @@ local Mix Interprete Projet CWD TStart TEnd in
 		  VecAudio1={MixAux Interprete [fondu(ouverture:0.0 fermeture:Duree Music1)] Facteur nil}
 		  VecAudio2={MixAux Interprete [fondu(ouverture:Duree fermeture:0.0 Music2)] Facteur nil}
 		  DureeMusic1={IntToFloat {Length VecAudio1}}/44100.0
-		  {Browse DureeMusic1-Duree}
 		  VecSilence={MixAux Interprete [voix([silence(duree:(DureeMusic1-Duree))])] Facteur nil}
 		 % Fondu1=fondu(ouverture=0.0, fermeture={IntToFloat L1}-(Duree*44100.0) Music1) 
 		 % Fondu2=fondu(ouverture=(Duree*44100.0) fermeture=0.0 Music2)
@@ -325,7 +324,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	       [] fondu_enchaine(duree:S MusiC1 MusiC2) then {FonduEnchaine S MusiC1 MusiC2 Facteur}
 	       [] couper(debut:S1 fin:S2 MusiC) then{Couper S1 S2 MusiC Facteur}
 	       [] merge(MusicWithIntensity) then {Merge MusicWithIntensity nil Facteur}
-	       [] H|T then {MixAux Interprete T Facteur Acc|{MixAux Interprete H Facteur nil}}
+	       [] H|T then {MixAux Interprete T Facteur {Append Acc {MixAux Interprete H Facteur nil}}}
 	       end % fin case Music
 	    end % fin fun {MixAux}
 	    {Flatten {MixAux Interprete Music 1.0  nil}}
@@ -485,7 +484,7 @@ local Mix Interprete Projet CWD TStart TEnd in
    end % fin local Audio
 
    local 
-      Music = {Projet.load CWD#'missionImpossible.dj.oz'}
+      Music = {Projet.load CWD#'exemple.dj.oz'}
    in
       % Votre code DOIT appeler Projet.run UNE SEULE fois.  Lors de cet appel,
       % vous devez mixer une musique qui démontre les fonctionalités de votre
@@ -494,6 +493,7 @@ local Mix Interprete Projet CWD TStart TEnd in
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
 
+<<<<<<< HEAD
       local TMixStart TMixEnd VecAudioFinal in
 	 {Browse 'begin Mixing'}
 	 TMixStart={Time.time}
@@ -509,6 +509,9 @@ local Mix Interprete Projet CWD TStart TEnd in
 	 {Browse 'end encoding'}
 	 {Browse TEnd-TStart}
       end
+=======
+	 {Browse {Projet.run Mix Interprete Music CWD#'out.wav'}}
+>>>>>>> origin/master
 
    end
 end
