@@ -1,5 +1,5 @@
 % Vous ne pouvez pas utiliser le mot-clé 'declare'.
-local Mix Interprete Projet CWD TStart TEnd in
+local Mix Interprete Projet CWD  in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre a votre systeme.
