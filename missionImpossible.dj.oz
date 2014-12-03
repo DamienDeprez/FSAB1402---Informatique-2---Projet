@@ -16,7 +16,9 @@ Partition2=[Tune1 Tune2 Tune1 Tune2 Tune1 Tune2 Tune1 Tune2 Tune1 Tune2 Tune1 Tu
 Music1=[partition(Partition1)]
 Music2=[partition([etirer(facteur:40.0 [silence]) d4 etirer(facteur:0.5 [silence]) etirer(facteur:1.5 d4)])]
 Music3=[partition([etirer(facteur:40.0 [silence]) g4 etirer(facteur:0.5 [silence]) etirer(facteur:1.5 g4)])]
-Music4=[partition(Partition2)]
+MainDroite=[partition(Partition2)]
+
+
 in
 [merge([0.25#Music1 0.25#Music2 0.25#Music3 0.25#Music4])]
 end

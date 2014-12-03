@@ -3,8 +3,8 @@ local Mix Interprete Projet CWD TStart TEnd in
 
    % CWD contient le chemin complet vers le dossier contenant le fichier 'code.oz'
    % modifiez sa valeur pour correspondre a votre systeme.
-   % CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/Projet2014/'}%Zelie
-   CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
+    CWD = {Property.condGet 'testcwd' 'D:/Bac2/Q3/Informatique/FSAB1402---Informatique-2---Projet/'}%Zelie
+  % CWD = {Property.condGet 'testcwd' '/media/damien/Home/Damien/Documents/UCL/FSA12-BA/Projet_Informatique_2/'}%DAMIEN
 
    % Si vous utilisez Mozart 1.4, remplacez la ligne precedente par celle-ci :
    % [Projet] = {Link ['Projet2014_mozart1.4.ozf']}
@@ -493,11 +493,7 @@ local Mix Interprete Projet CWD TStart TEnd in
       %
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
-<<<<<<< HEAD
-	  {Browse start}
-      {Browse {Projet.run Mix Interprete Music CWD#'impossible.wav'}}
-  
-=======
+
       local TMixStart TMixEnd VecAudioFinal in
 	 {Browse 'begin Mixing'}
 	 TMixStart={Time.time}
@@ -513,7 +509,7 @@ local Mix Interprete Projet CWD TStart TEnd in
 	 {Browse 'end encoding'}
 	 {Browse TEnd-TStart}
       end
->>>>>>> origin/master
+
    end
 end
 
