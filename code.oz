@@ -493,25 +493,8 @@ local Mix Interprete Projet CWD  in
       % Si votre code devait ne pas passer nos tests, cet exemple serait le
       % seul qui ateste de la validité de votre implémentation.
 
-<<<<<<< HEAD
-      local TMixStart TMixEnd VecAudioFinal in
-	 {Browse 'begin Mixing'}
-	 TMixStart={Time.time}
-	 VecAudioFinal={Mix Interprete Music}
-	 TMixEnd={Time.time}
-	 {Browse 'end Mixing'}
-	 {Browse TMixEnd-TMixStart}
-	 {Browse 'start encoding'}
-	 TStart={Time.time}
-	 {Browse {Projet.writeFile CWD#'MissionImpossible.wav' VecAudioFinal}}
-	 {Browse {Projet.run Mix Interprete Music CWD#'Out.wav'}}
-	 TEnd={Time.time}
-	 {Browse 'end encoding'}
-	 {Browse TEnd-TStart}
-      end
-=======
+
 	 {Browse {Projet.run Mix Interprete Music CWD#'out.wav'}}
->>>>>>> origin/master
 
    end
 end
