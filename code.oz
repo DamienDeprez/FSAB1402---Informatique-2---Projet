@@ -173,7 +173,7 @@ local Mix Interprete Projet CWD  in
 		     [] H|T andthen Size==0.0 then Acc
 		     end % fin case L1
 		  end % fin RepetitionAux
-		 {Reverse {RepetitionAux L Duree*44100.0 nil}}
+		 {Reverse {RepetitionAux L Duree*44100.0 {Reverse L}}}
 	       end % fin local
 	    end % fin RepetitionDuree
 		
