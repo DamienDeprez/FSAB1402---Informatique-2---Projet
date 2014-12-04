@@ -10,6 +10,8 @@ Dans ce rapport, nous allons vous présenter les fonctions que nous avons implé
 
 \section*{Structure du programme}
 Les deux fonctions principales de notre programme étant relativement indépendantes dans leur implémentation et leurs besoins, nous avons décidé de déclarer les sous-fonctions relatives à chaque fonction à l'intérieur de celle-ci.
+Les spécifications de chaque fonction et sous-fonctions se trouvent dans notre programme.
+
 \begin{lstlisting}[frame=single] 
 fun{Interprete Partition}
 	--Sous-Fonctions--
@@ -83,7 +85,6 @@ La fonction \textit{\textbf{Mix}} est plus exigeante au niveau des transformatio
 Par rapport aux arguments de notre fonction \textit{\textbf{MixAux}}, nous avons utilisé l'argument \textit{Facteur} pour pouvoir varier l'intensité de la musique. Nous avons également utilisé un accumulateur pour faire de la récursion terminale.
 
 
-
 \section*{Difficultés rencontrées, limitations et problèmes connus}
 \begin{itemize}
 \item Etant un binôme de deux \textbf{non-musiciens}, le vocabulaire lié à la musique nous a posé quelques difficultés lors de la compréhension du problème, mais également lors de l'implémentation de certaines fonctions.
@@ -109,6 +110,7 @@ Par rapport aux arguments de notre fonction \textit{\textbf{MixAux}}, nous avons
 \item Fonction \textit{\textbf{Interprete}}: Cette fonction a une complexité spatiale en $\vartheta(1)$, car elle est récursive terminale.
 Pour la complexité temporelle, la fonction \textit{\textbf {Interprete}} en elle-même est en  $\vartheta(n)$ et de même pour toutes les sous-fonctions qu'elle utilise. Ceci nous donne une complexité temporelle  générale pour la fonction en  $\vartheta(n)$
 \item Fonction \textit{\textbf{Mix}}: Tout comme la fonction \textit{\textbf{Interprete}}, la fonction \textit{\textbf{Mix}} est récursive terminale. Elle a donc une complexité spatiale en  $\vartheta(1)$. Par contre, pour la complexité temporelle, la fonction \textit{\textbf{Mix}} a une complexité temporelle en  $\vartheta(n)$. De plus, comme elle utilise certaines fonctions ayant une complexité en  $\vartheta(n^2)$ (par exemple la fonction \textit{\textbf{Repetition}}) , elle a donc une complexité générale en  $\vartheta(n^2)$
+\item Les complexités des différentes sous-fonctions est détaillée en commentaire dans notre programme. 
 
 \end{itemize} 
 
